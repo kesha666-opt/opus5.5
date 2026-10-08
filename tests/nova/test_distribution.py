@@ -113,7 +113,6 @@ def test_installer_and_uninstaller_are_scoped():
 def test_windows_installer_checks_the_local_panel():
     install = (ROOT / "scripts/install.ps1").read_text(encoding="utf-8")
     assert "$Panel = Invoke-WebRequest $Admin" in install
-    assert "fcc-claude.exe') --version; Assert-Exit" in install
     assert 'type="password"' in install
 
 

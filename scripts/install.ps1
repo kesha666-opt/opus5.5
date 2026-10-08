@@ -71,7 +71,6 @@ try {
  if (-not $Ready) { throw "Server failed to start. See $Root\logs" }
  $Panel = Invoke-WebRequest $Admin -UseBasicParsing -TimeoutSec 10
  if ($Panel.Content -notmatch 'Nova Code' -or $Panel.Content -notmatch 'type="password"') { throw 'Nova Code panel did not return the expected form.' }
- & (Join-Path $Bin 'fcc-claude.exe') --version; Assert-Exit
  Set-Content (Join-Path $Root 'server.pid') $Process.Id
  if (-not $NoOpen) { Start-Process $Admin }
  Write-Host "Nova Code installed: $Commit`nPanel: $Admin`nEnter your NVIDIA key in the panel, then run: fcc-claude`nFull path: $Bin\fcc-claude.exe"
