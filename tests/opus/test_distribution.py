@@ -51,6 +51,7 @@ def test_panel_assets_are_served(monkeypatch, tmp_path):
 
 def test_fork_isolated_from_existing_fcc(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
     assert config_dir_path() == tmp_path / ".opus-5-5"
     assert legacy_env_paths() == ()
     settings = Settings()

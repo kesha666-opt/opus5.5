@@ -185,7 +185,7 @@ def test_admin_page_uses_installed_version(monkeypatch, tmp_path):
     response = _local_client(create_test_app()).get("/admin")
 
     assert response.status_code == 200
-    assert 'href="https://github.com/kesha666-opt/opus-5-5"' in response.text
+    assert 'href="https://github.com/kesha666-opt/opus-5-5-bridge"' in response.text
     assert 'target="_blank"' in response.text
     assert 'rel="noopener noreferrer"' in response.text
     assert 'href="/admin/assets/9.8.7/opus.css"' in response.text
