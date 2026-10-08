@@ -225,7 +225,13 @@ async def _verify_nova_nvidia_key(api_key: str) -> JsonObject:
     except httpx.HTTPError:
         return {"ok": False, "message": "Could not connect to NVIDIA."}
     if response.status_code == 200:
-        return {"ok": True}
+        try:
+            payload = response.json()
+        except ValueError:
+            payload = None
+        if isinstance(payload, dict) and payload.get("choices"):
+            return {"ok": True}
+        return {"ok": False, "message": "NVIDIA returned no generation result."}
     if response.status_code in {401, 403}:
         return {"ok": False, "message": "NVIDIA rejected this API key."}
     if response.status_code == 429:

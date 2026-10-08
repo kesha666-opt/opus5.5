@@ -279,7 +279,7 @@ async def probe_root():
 
 @router.get("/health")
 async def health():
-    return {"status": "healthy"}
+    return {"status": "healthy", "service": "nova-code-bridge"}
 
 
 @router.api_route("/health", methods=["HEAD", "OPTIONS"])

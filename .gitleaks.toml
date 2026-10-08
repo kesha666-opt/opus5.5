@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Literal environment-variable names in upstream Hermes tests, not credentials"
+condition = "AND"
+paths = ['''^tests/cli/test_hermes_config\.py$''']
+regexTarget = "secret"
+regexes = ['''^FCC_HERMES_(A1B2C3|ABC123)$''']

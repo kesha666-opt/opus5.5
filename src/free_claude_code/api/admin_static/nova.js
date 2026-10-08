@@ -27,7 +27,7 @@ function safeMessage(value, fallback) {
 }
 
 async function verifyProvider() {
-  setStatus("neutral", "Проверяем NVIDIA…", "Выполняется реальный запрос списка доступных моделей.");
+  setStatus("neutral", "Проверяем NVIDIA…", "Выполняется короткий проверочный запрос к модели NVIDIA.");
   try {
     const result = await request("/admin/api/nova/verify", { method: "POST", body: "{}" });
     if (!result.ok) throw new Error(result.message || "NVIDIA отклонила запрос.");

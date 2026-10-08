@@ -1,78 +1,62 @@
 #!/bin/sh
 set -eu
-
-REPOSITORY="caspercbwilliambzb13-del/nova-code-bridge"
+umask 077
+REPOSITORY="kesha666-opt/nova-code-bridge"
 PACKAGE="nova-code-bridge"
 ADMIN_URL="http://127.0.0.1:8182/admin"
 HEALTH_URL="http://127.0.0.1:8182/health"
-
 fail() { printf 'Ошибка: %s\n' "$1" >&2; exit 1; }
-step() { printf '\n%s\n' "$1"; }
-
-[ "$(uname -s)" = "Darwin" ] || fail "Эта тестовая установка предназначена для macOS."
-[ -n "${HOME:-}" ] || fail "Не определена домашняя папка пользователя."
-command -v curl >/dev/null 2>&1 || fail "Не найден curl."
-PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-command -v gh >/dev/null 2>&1 || fail "Для приватного GitHub требуется GitHub CLI (gh)."
+case "$(uname -s)" in Darwin|Linux) ;; *) fail 'Поддерживаются macOS и Linux.' ;; esac
+[ -n "${HOME:-}" ] || fail 'Не определена домашняя папка.'
+PATH="$HOME/.local/bin:$PATH"
+export PATH
+command -v gh >/dev/null || fail 'Для приватного репозитория установите GitHub CLI: https://cli.github.com'
 gh auth status --hostname github.com >/dev/null 2>&1 || gh auth login --hostname github.com --web --git-protocol https
-visibility=$(gh repo view "$REPOSITORY" --json visibility --jq .visibility)
-[ "$visibility" = "PRIVATE" ] || fail "Ожидался приватный репозиторий."
-archive_dir=$(mktemp -d)
-trap 'rm -f "$archive_dir/source.zip"; rmdir "$archive_dir"' EXIT
-gh api "repos/$REPOSITORY/zipball/main" >"$archive_dir/source.zip"
-
-step "1/4 Подготовка установщика"
-if ! command -v uv >/dev/null 2>&1; then
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-fi
-command -v uv >/dev/null 2>&1 || fail "uv установлен, но пока не найден. Откройте новый терминал и повторите команду."
-
-step "2/4 Установка Nova Code"
-if [ -f "$HOME/.nova-code/.env" ]; then
-  backup_dir="$HOME/.nova-code/backups"
-  mkdir -p "$backup_dir"
-  cp -p "$HOME/.nova-code/.env" "$backup_dir/env-before-install-$(date +%Y%m%d-%H%M%S)"
-fi
+[ "$(gh repo view "$REPOSITORY" --json visibility --jq .visibility)" = PRIVATE ] || fail 'Ожидался приватный репозиторий.'
+# Never replace a command belonging to another installation, even a broken symlink.
 for executable in fcc-server fcc-claude; do
-  if command -v "$executable" >/dev/null 2>&1; then
-    existing=$(command -v "$executable")
-    case "$(head -n 1 "$existing")" in
-      *nova-code-bridge*) ;;
-      *) fail "Команда $executable уже занята другой установкой. Для проверки с нуля используйте чистого пользователя macOS." ;;
-    esac
-  fi
+  existing=$(command -v "$executable" || true)
+  [ -z "$existing" ] || fail "Команда $executable уже существует ($existing). Используйте чистого пользователя или отдельный HOME/PATH."
+  [ ! -e "$HOME/.local/bin/$executable" ] && [ ! -L "$HOME/.local/bin/$executable" ] || fail "Место для $executable уже занято."
 done
-uv tool install --force "$archive_dir/source.zip"
-tool_bin=$(uv tool dir --bin)
-PATH="$tool_bin:$PATH"
-command -v fcc-server >/dev/null 2>&1 || fail "Команда fcc-server не установилась."
-command -v fcc-claude >/dev/null 2>&1 || fail "Команда fcc-claude не установилась."
-
-step "3/4 Проверка Claude Code"
-if ! command -v claude >/dev/null 2>&1; then
-  curl -fsSL https://claude.ai/install.sh | bash
-  PATH="$HOME/.local/bin:$PATH"
+command -v curl >/dev/null || fail 'Требуется curl.'
+if curl -s --connect-timeout 2 "$HEALTH_URL" >/dev/null 2>&1; then fail 'Порт 8182 занят. Установка остановлена без изменения сервера.'; fi
+archive_dir=$(mktemp -d)
+trap 'rm -rf "$archive_dir"' EXIT HUP INT TERM
+commit=$(gh api "repos/$REPOSITORY/commits/${NOVA_REF:-main}" --jq .sha)
+case "$commit" in ''|*[!0-9a-f]*) fail 'GitHub вернул неверный commit.' ;; esac
+[ "${#commit}" = 40 ] || fail 'GitHub вернул неверный commit.'
+gh api "repos/$REPOSITORY/zipball/$commit" > "$archive_dir/source.zip"
+if ! command -v uv >/dev/null; then
+ curl -fsSL https://astral.sh/uv/install.sh -o "$archive_dir/uv.sh"
+ UV_NO_MODIFY_PATH=1 sh "$archive_dir/uv.sh"
 fi
-command -v claude >/dev/null 2>&1 || fail "Claude Code установлен, но пока не найден. Откройте новый терминал и повторите команду."
-
-step "4/4 Запуск панели"
+# Dedicated tool environment and bin directory; no --force and no global uv tools.
+export UV_TOOL_DIR="$HOME/.nova-code/tools"
+export UV_TOOL_BIN_DIR="$HOME/.local/bin"
+uv tool install "$archive_dir/source.zip"
+if ! command -v claude >/dev/null; then
+ curl -fsSL https://claude.ai/install.sh -o "$archive_dir/claude.sh"
+ bash "$archive_dir/claude.sh"
+fi
+command -v claude >/dev/null || fail 'Claude Code не найден после установки.'
 mkdir -p "$HOME/.nova-code/logs"
-if ! curl -fsS "$HEALTH_URL" >/dev/null 2>&1; then
-  nohup "$tool_bin/fcc-server" >"$HOME/.nova-code/logs/launcher.log" 2>&1 &
-  server_pid=$!
-  ready=0
-  attempt=0
-  while [ "$attempt" -lt 30 ]; do
-    if curl -fsS "$HEALTH_URL" >/dev/null 2>&1; then ready=1; break; fi
-    if ! kill -0 "$server_pid" 2>/dev/null; then break; fi
-    attempt=$((attempt + 1))
-    sleep 1
-  done
-  [ "$ready" -eq 1 ] || fail "Сервер не запустился. Диагностика: $HOME/.nova-code/logs/launcher.log"
+printf '%s\n' "$commit" > "$HOME/.nova-code/installed-commit"
+# Ignore inherited FCC routing/configuration overrides in this installation.
+unset FCC_ENV_FILE NVIDIA_NIM_API_KEY
+export HOST=127.0.0.1 PORT=8182
+nohup "$HOME/.local/bin/fcc-server" > "$HOME/.nova-code/logs/launcher.log" 2>&1 < /dev/null &
+server_pid=$!
+ready=0
+attempt=0
+while [ "$attempt" -lt 60 ]; do
+ if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"service":"nova-code-bridge"'; then ready=1; break; fi
+ kill -0 "$server_pid" 2>/dev/null || break
+ attempt=$((attempt + 1)); sleep 1
+done
+[ "$ready" = 1 ] || fail 'Сервер не запустился. Диагностика: ~/.nova-code/logs/launcher.log'
+printf '%s\n' "$server_pid" > "$HOME/.nova-code/server.pid"
+if [ "${NOVA_NO_OPEN:-0}" != 1 ]; then
+ case "$(uname -s)" in Darwin) open "$ADMIN_URL" ;; Linux) if command -v xdg-open >/dev/null; then xdg-open "$ADMIN_URL" >/dev/null 2>&1 || true; fi ;; esac
 fi
-open "$ADMIN_URL"
-
-printf '\nГотово. Введите NVIDIA API-ключ в открывшейся панели.\n'
-printf 'После успешной проверки запускайте: fcc-claude\n'
-printf 'Удаление пакета: uv tool uninstall %s\n' "$PACKAGE"
+printf '\nNova Code установлен: %s\nПанель: %s\nВведите ключ в панели, затем запускайте fcc-claude.\nЕсли команда не найдена: ~/.local/bin/fcc-claude\n' "$commit" "$ADMIN_URL"

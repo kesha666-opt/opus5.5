@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 from free_claude_code.config.paths import config_dir_path, legacy_env_paths
@@ -30,7 +31,7 @@ def test_panel_is_focused_and_keeps_legal_source_link(monkeypatch, tmp_path):
     assert "NVIDIA" in response.text
     assert 'id="apiKey"' in response.text
     assert "Сохранить и проверить" in response.text
-    assert "caspercbwilliambzb13-del/nova-code-bridge" in response.text
+    assert "kesha666-opt/nova-code-bridge" in response.text
     assert "AGPL" in response.text
     assert "Free Claude Code Admin" not in response.text
     assert "OpenRouter" not in response.text
@@ -103,7 +104,8 @@ def test_installer_and_uninstaller_are_scoped():
     assert "127.0.0.1:8182" in install
     assert "~/.fcc" not in install
     assert 'uv tool uninstall "$PACKAGE"' in uninstall
-    assert ".nova-code-backup-" in uninstall
+    assert ".nova-code/tools" in uninstall
+    assert "mv " not in uninstall
     assert "free-claude-code" not in uninstall
 
 
@@ -118,3 +120,24 @@ def test_repository_contains_no_probable_live_nvidia_key():
         assert not re.search(r"nvapi-[A-Za-z0-9_-]{20,}", text), (
             f"probable NVIDIA key in {path}"
         )
+
+
+@pytest.mark.asyncio
+async def test_verification_uses_generation_and_does_not_echo_provider_errors():
+    import httpx
+
+    from free_claude_code.api.admin_routes import _verify_nova_nvidia_key
+
+    secret = "synthetic-verification-secret"
+    for status, body, expected in [
+        (401, {"error": secret}, False),
+        (200, {"data": []}, False),
+        (200, {"choices": [{"message": {"content": "OK"}}]}, True),
+    ]:
+        post = AsyncMock(return_value=httpx.Response(status, json=body))
+        with patch("httpx.AsyncClient.post", post):
+            result = await _verify_nova_nvidia_key(secret)
+        assert result["ok"] is expected
+        assert secret not in str(result)
+        assert post.call_args.args[0].endswith("/chat/completions")
+        assert post.call_args.kwargs["json"]["max_tokens"] == 2
