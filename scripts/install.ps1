@@ -11,12 +11,28 @@ if ([Environment]::OSVersion.Platform -ne 'Win32NT') { throw 'This installer req
 if ($Ref -notmatch '^[A-Za-z0-9._/-]+$') { throw 'Invalid installation version.' }
 $OriginalPath = $env:PATH
 $env:PATH = "$Bin;$OriginalPath"
-foreach ($Name in @('fcc-server','fcc-claude','fcc-cloud')) {
- if ((Get-Command $Name -ErrorAction SilentlyContinue) -or (Test-Path (Join-Path $Bin "$Name.exe"))) { throw "$Name already exists. Use a clean Windows user; no existing FCC will be replaced." }
+$OwnedInstall = Test-Path (Join-Path $Root 'tools\opus5-5\pyvenv.cfg')
+foreach ($Name in @('fcc-server','fcc-claude','fcc-opus','fcc-cloud')) {
+ $Command = Get-Command $Name -ErrorAction SilentlyContinue
+ $Slot = Join-Path $Bin "$Name.exe"
+ if ($Command -or (Test-Path $Slot)) {
+  if (-not $OwnedInstall -or -not $Command -or $Command.Source -ne $Slot -or -not (Test-Path $Slot)) {
+   throw "$Name already exists. Use a clean Windows user; no existing FCC will be replaced."
+  }
+ }
 }
 $Occupied = $false
 try { $null = Invoke-WebRequest $Health -UseBasicParsing -TimeoutSec 2; $Occupied = $true } catch { if ($_.Exception.Response) { $Occupied = $true } }
-if ($Occupied) { throw 'Port 8182 is occupied. Existing server left untouched.' }
+if ($Occupied) {
+ if (-not $OwnedInstall) { throw 'Port 8182 is occupied. Existing server left untouched.' }
+ $HealthStatus = Invoke-RestMethod $Health -TimeoutSec 5
+ if ($HealthStatus.service -ne 'opus5.5') { throw 'Port 8182 belongs to another server.' }
+ $PidFile = Join-Path $Root 'server.pid'
+ if (-not (Test-Path $PidFile)) { throw 'Opus 5.5 PID file is missing.' }
+ $OldPid = [int](Get-Content $PidFile -Raw)
+ $OldProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $OldPid"
+ if (-not $OldProcess -or $OldProcess.CommandLine -notlike '*fcc-server*') { throw 'Could not safely stop the server on port 8182.' }
+}
 $TempDir = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
 New-Item $TempDir -ItemType Directory | Out-Null
 try {
@@ -29,7 +45,18 @@ try {
  }
  $env:UV_TOOL_DIR = Join-Path $Root 'tools'
  $env:UV_TOOL_BIN_DIR = $Bin
- & uv tool install $Archive
+ if ($Occupied) {
+  Stop-Process -Id $OldPid
+  for ($i = 0; $i -lt 20; $i++) {
+   try { $null = Invoke-WebRequest $Health -UseBasicParsing -TimeoutSec 1; Start-Sleep 1 }
+   catch { if (-not $_.Exception.Response) { break }; Start-Sleep 1 }
+  }
+  $StillOccupied = $false
+  try { $null = Invoke-WebRequest $Health -UseBasicParsing -TimeoutSec 1; $StillOccupied = $true }
+  catch { if ($_.Exception.Response) { $StillOccupied = $true } }
+  if ($StillOccupied) { throw 'Server did not stop before update.' }
+ }
+ & uv tool install --reinstall $Archive
  if ($LASTEXITCODE -ne 0) { throw "Installation failed: exit $LASTEXITCODE" }
  $UvExecutable = (Get-Command uv).Source
  $env:PATH = $OriginalPath

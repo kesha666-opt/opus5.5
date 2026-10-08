@@ -24,14 +24,17 @@ jobs:
           version: '0.12.17'
       - name: Install from public GitHub archive (Unix)
         if: runner.os != 'Windows'
-        run: sh scripts/install.sh
+        run: |
+          sh scripts/install.sh
+          sh scripts/install.sh
       - name: Install from public GitHub archive (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
+          ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
-          fcc-cloud --version
+          fcc-opus --version
           if ($LASTEXITCODE -ne 0) { throw 'Windows client alias failed' }
       - name: Verify Unix server, panel and client
         if: runner.os != 'Windows'
@@ -44,7 +47,7 @@ jobs:
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
           fcc-claude --version
           if ($LASTEXITCODE -ne 0) { throw 'Client launch failed' }
-          fcc-cloud --version
+          fcc-opus --version
           if ($LASTEXITCODE -ne 0) { throw 'Client alias failed' }
       - name: Server startup diagnostics
         if: failure()

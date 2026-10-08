@@ -69,14 +69,53 @@ def _start_admin_browser(
 
 def serve() -> None:
     """Start and supervise the FastAPI server."""
+    settings = get_settings()
+    if _watch_running_opus(settings):
+        return
     try:
         ServerSupervisor().run()
     except OSError as exc:
         if exc.errno == errno.EADDRINUSE:
-            _log_port_in_use(get_settings())
+            if _watch_running_opus(settings):
+                return
+            _log_port_in_use(settings)
         else:
             logger.error("Could not start FCC: {}", exc)
         raise SystemExit(1) from None
+
+
+def _opus_server_is_healthy(settings: Settings) -> bool:
+    """Recognize only our local Opus server, never an unrelated port occupant."""
+    try:
+        url = f"http://127.0.0.1:{settings.port}/health"
+        with open_local_request(Request(url), timeout=1.5) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        return (
+            isinstance(payload, dict)
+            and payload.get("service") == "opus5.5"
+            and payload.get("status") == "healthy"
+        )
+    except (OSError, ValueError):
+        return False
+
+
+def _watch_running_opus(settings: Settings) -> bool:
+    if not _opus_server_is_healthy(settings):
+        return False
+    print(f"🟢 Сервер Opus 5.5: OK — {local_admin_url(settings)}")
+    print("Сервер уже запущен. Откройте второй терминал и введите fcc-opus.")
+    print("Ctrl+C закроет только это окно наблюдения; сервер продолжит работать.")
+    try:
+        while True:
+            time.sleep(30)
+            if _opus_server_is_healthy(settings):
+                print("🟢 Сервер Opus 5.5: OK", flush=True)
+            else:
+                print("🔴 Сервер Opus 5.5 перестал отвечать.")
+                return True
+    except KeyboardInterrupt:
+        print("Наблюдение остановлено; сервер продолжает работать.")
+        return True
 
 
 def _log_port_in_use(settings: Settings) -> None:

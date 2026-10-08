@@ -102,7 +102,7 @@ def test_installer_and_uninstaller_are_scoped():
     install = (ROOT / "scripts/install.sh").read_text(encoding="utf-8")
     uninstall = (ROOT / "scripts/uninstall.sh").read_text(encoding="utf-8")
     assert "opus5.5" in install
-    assert "fcc-server" in install and "fcc-claude" in install
+    assert "fcc-server" in install and "fcc-opus" in install
     assert "127.0.0.1:8182" in install
     assert 'type="password"' in install
     assert "~/.fcc" not in install

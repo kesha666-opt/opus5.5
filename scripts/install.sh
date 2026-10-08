@@ -13,13 +13,28 @@ case "$REF" in ''|*[!A-Za-z0-9._/-]*) fail 'Недопустимая верси�
 ORIGINAL_PATH="$PATH"
 PATH="$HOME/.local/bin:$PATH"
 export PATH
-for executable in fcc-server fcc-claude fcc-cloud; do
+owned_install=0
+for executable in fcc-server fcc-claude fcc-opus fcc-cloud; do
   existing=$(command -v "$executable" || true)
-  [ -z "$existing" ] || fail "Команда $executable уже существует ($existing). Используйте чистого пользователя или отдельный HOME/PATH."
-  [ ! -e "$HOME/.local/bin/$executable" ] && [ ! -L "$HOME/.local/bin/$executable" ] || fail "Место для $executable уже занято."
+  slot="$HOME/.local/bin/$executable"
+  if [ -n "$existing" ] || [ -e "$slot" ] || [ -L "$slot" ]; then
+    target=$(readlink "$slot" 2>/dev/null || true)
+    [ "$existing" = "$slot" ] && [ "$target" = "$HOME/.opus5.5/tools/opus5-5/bin/$executable" ] ||
+      fail "Команда $executable уже существует ($existing). Используйте чистого пользователя или отдельный HOME/PATH."
+    owned_install=1
+  fi
 done
 command -v curl >/dev/null || fail 'Требуется curl.'
-if curl -s --connect-timeout 2 "$HEALTH_URL" >/dev/null 2>&1; then fail 'Порт 8182 занят. Установка остановлена без изменения сервера.'; fi
+if curl -s --connect-timeout 2 "$HEALTH_URL" >/dev/null 2>&1; then
+  [ "$owned_install" = 1 ] || fail 'Порт 8182 занят. Установка остановлена без изменения сервера.'
+  curl -fsS "$HEALTH_URL" | grep -q '"service":"opus5.5"' || fail 'Порт 8182 занят другим сервером.'
+  pid_file="$HOME/.opus5.5/server.pid"
+  [ -f "$pid_file" ] || fail 'Не найден PID работающего Opus 5.5.'
+  previous_pid=$(cat "$pid_file")
+  case "$previous_pid" in ''|*[!0-9]*) fail 'Неверный PID работающего Opus 5.5.' ;; esac
+  previous_command=$(ps -p "$previous_pid" -o command= 2>/dev/null || true)
+  case "$previous_command" in *"$HOME/.local/bin/fcc-server"*) ;; *) fail 'Нельзя безопасно остановить сервер на порту 8182.' ;; esac
+fi
 archive_dir=$(mktemp -d)
 trap 'rm -rf "$archive_dir"' EXIT HUP INT TERM
 curl -fsSL "https://github.com/$REPOSITORY/archive/$REF.zip" -o "$archive_dir/source.zip"
@@ -29,7 +44,15 @@ if ! command -v uv >/dev/null; then
 fi
 export UV_TOOL_DIR="$HOME/.opus5.5/tools"
 export UV_TOOL_BIN_DIR="$HOME/.local/bin"
-uv tool install "$archive_dir/source.zip"
+if [ -n "${previous_pid:-}" ]; then
+  kill "$previous_pid"
+  attempt=0
+  while curl -s --connect-timeout 1 "$HEALTH_URL" >/dev/null 2>&1; do
+    [ "$attempt" -lt 20 ] || fail 'Сервер не остановился перед обновлением.'
+    attempt=$((attempt + 1)); sleep 1
+  done
+fi
+uv tool install --reinstall "$archive_dir/source.zip"
 uv_executable=$(command -v uv)
 PATH="$ORIGINAL_PATH" "$uv_executable" tool update-shell || fail 'Не удалось добавить команды Opus 5.5 в PATH.'
 if ! command -v claude >/dev/null; then

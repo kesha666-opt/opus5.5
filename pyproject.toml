@@ -46,7 +46,7 @@ dependencies = [
 [project.scripts]
 fcc-server = "free_claude_code.cli.entrypoints:serve"
 fcc-claude = "free_claude_code.cli.launchers.claude:launch"
-fcc-cloud = "free_claude_code.cli.launchers.claude:launch"
+fcc-opus = "free_claude_code.cli.launchers.claude:launch"
 
 [project.optional-dependencies]
 voice_local = [
