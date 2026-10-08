@@ -9,13 +9,13 @@
 **macOS / Linux:**
 
 ```sh
-gh repo clone kesha666-opt/opus-5-5-bridge && sh opus-5-5/scripts/install.sh
+gh repo clone kesha666-opt/opus-5-5-bridge && sh opus-5-5-bridge/scripts/install.sh
 ```
 
 **Windows PowerShell:**
 
 ```powershell
-gh repo clone kesha666-opt/opus-5-5-bridge; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File opus-5-5/scripts/install.ps1 }
+gh repo clone kesha666-opt/opus-5-5-bridge; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File opus-5-5-bridge/scripts/install.ps1 }
 ```
 
 Установщик подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели вводится только ключ NVIDIA; после успешной проверки запускайте `fcc-claude`.
