@@ -6,63 +6,23 @@
 
 ## Установка
 
-Нужен доступ к приватному репозиторию `kesha666-opt/nova-code-bridge`. Команда сама загружает GitHub CLI из официального репозитория, если он отсутствует. GitHub предложит вход через браузер. NVIDIA-ключ в терминал не вводится.
+Для приватной сборки нужен установленный GitHub CLI (`gh`) с выполненным входом в аккаунт, имеющий доступ к репозиторию. Команды запускаются в папке, где ещё нет `nova-code-bridge`.
 
-**macOS / Linux — скопируйте весь блок как одну команду:**
+**macOS / Linux:**
 
 ```sh
-(
- set -eu
- d=$(mktemp -d); trap 'rm -rf "$d"' EXIT
- if ! command -v gh >/dev/null; then
-   case "$(uname -s)" in Darwin) os=macOS; ext=zip;; Linux) os=linux; ext=tar.gz;; *) exit 1;; esac
-   case "$(uname -m)" in arm64|aarch64) arch=arm64;; x86_64|amd64) arch=amd64;; *) exit 1;; esac
-   name="gh_2.102.0_${os}_${arch}"
-   curl -fsSL "https://github.com/cli/cli/releases/download/v2.102.0/$name.$ext" -o "$d/gh.$ext"
-   if [ "$ext" = zip ]; then unzip -q "$d/gh.zip" -d "$d"; else tar -xzf "$d/gh.tar.gz" -C "$d"; fi
-   PATH="$d/$name/bin:$PATH"; export PATH
- fi
- gh auth status --hostname github.com >/dev/null 2>&1 || gh auth login --hostname github.com --web --git-protocol https
- gh api 'repos/kesha666-opt/nova-code-bridge/contents/scripts/install.sh?ref=main' -H 'Accept: application/vnd.github.raw+json' > "$d/install.sh"
- sh "$d/install.sh"
-)
+gh repo clone kesha666-opt/nova-code-bridge && sh nova-code-bridge/scripts/install.sh
 ```
 
-**Windows PowerShell — скопируйте весь блок как одну команду:**
+**Windows PowerShell:**
 
 ```powershell
-& {
- $ErrorActionPreference='Stop'
- $d=Join-Path $env:TEMP ([Guid]::NewGuid().ToString()); New-Item $d -ItemType Directory | Out-Null
- try {
-   if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-     $arch=if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') {'arm64'} else {'amd64'}
-     Invoke-WebRequest "https://github.com/cli/cli/releases/download/v2.102.0/gh_2.102.0_windows_$arch.zip" -OutFile "$d\gh.zip" -UseBasicParsing
-     Expand-Archive "$d\gh.zip" "$d\gh"
-     $gh=Get-ChildItem "$d\gh" -Filter gh.exe -Recurse | Select-Object -First 1
-     if (-not $gh) { throw 'GitHub CLI download failed' }
-     $env:PATH="$($gh.DirectoryName);$env:PATH"
-   }
-   $ErrorActionPreference='Continue'; gh auth status --hostname github.com 2>$null; $authExit=$LASTEXITCODE; $ErrorActionPreference='Stop'
-   if ($authExit -ne 0) { gh auth login --hostname github.com --web --git-protocol https; if ($LASTEXITCODE -ne 0) { throw 'GitHub login failed' } }
-   $s=gh api 'repos/kesha666-opt/nova-code-bridge/contents/scripts/install.ps1?ref=main' -H 'Accept: application/vnd.github.raw+json'
-   if ($LASTEXITCODE -ne 0) { throw 'Download failed' }
-   [IO.File]::WriteAllText("$d\install.ps1",($s -join "`n"))
-   powershell -NoProfile -ExecutionPolicy Bypass -File "$d\install.ps1"
-   if ($LASTEXITCODE -ne 0) { throw 'Installation failed' }
- } finally { Remove-Item $d -Recurse -Force -ErrorAction SilentlyContinue }
-}
+gh repo clone kesha666-opt/nova-code-bridge; if (!$LASTEXITCODE) { powershell -ExecutionPolicy Bypass -File nova-code-bridge/scripts/install.ps1 }
 ```
 
-Установщик получает архив конкретного commit через GitHub, устанавливает uv/Python и Claude Code при необходимости, запускает `fcc-server` и открывает [панель](http://127.0.0.1:8182/admin). В Linux без графического окружения откройте панель вручную на том же компьютере.
+Установщик сам подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели — только ключ NVIDIA, кнопка проверки и статус. После успешной проверки запустите `fcc-claude`.
 
-В панели вставьте NVIDIA API key и нажмите «Сохранить и проверить». После успешной проверки:
-
-```sh
-fcc-claude
-```
-
-Если команда ещё не найдена в PATH: macOS/Linux — `~/.local/bin/fcc-claude`; Windows — `& "$env:USERPROFILE\.local\bin\fcc-claude.exe"`. Для повторного запуска сервера используйте аналогичный путь к `fcc-server`.
+Все служебные шаги находятся внутри двух установщиков. В Linux без графического окружения откройте панель вручную на том же компьютере. Если команды нет в PATH: `~/.local/bin/fcc-claude` на macOS/Linux или `& "$env:USERPROFILE\.local\bin\fcc-claude.exe"` на Windows.
 
 ## Изоляция и ключ
 
