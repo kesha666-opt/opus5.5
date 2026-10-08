@@ -27,11 +27,11 @@ def _client(monkeypatch, tmp_path: Path) -> TestClient:
 def test_panel_is_focused_and_keeps_legal_source_link(monkeypatch, tmp_path):
     response = _client(monkeypatch, tmp_path).get("/admin")
     assert response.status_code == 200
-    assert "Nova Code" in response.text
+    assert "Opus 5.5" in response.text
     assert "NVIDIA" in response.text
     assert 'id="apiKey"' in response.text
     assert "Сохранить и проверить" in response.text
-    assert "kesha666-opt/nova-code-bridge" in response.text
+    assert "kesha666-opt/opus-5-5" in response.text
     assert "AGPL" in response.text
     assert "Free Claude Code Admin" not in response.text
     assert "OpenRouter" not in response.text
@@ -42,30 +42,30 @@ def test_panel_assets_are_served(monkeypatch, tmp_path):
     client = _client(monkeypatch, tmp_path)
     html = client.get("/admin").text
     version = html.split("/admin/assets/", 1)[1].split("/", 1)[0]
-    assert client.get(f"/admin/assets/{version}/nova.css").status_code == 200
-    script = client.get(f"/admin/assets/{version}/nova.js")
+    assert client.get(f"/admin/assets/{version}/opus.css").status_code == 200
+    script = client.get(f"/admin/assets/{version}/opus.js")
     assert script.status_code == 200
-    assert "/admin/api/nova/configure" in script.text
-    assert "/admin/api/nova/verify" in script.text
+    assert "/admin/api/opus/configure" in script.text
+    assert "/admin/api/opus/verify" in script.text
 
 
 def test_fork_isolated_from_existing_fcc(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
-    assert config_dir_path() == tmp_path / ".nova-code"
+    assert config_dir_path() == tmp_path / ".opus-5-5"
     assert legacy_env_paths() == ()
     settings = Settings()
     assert settings.port == 8182
-    assert settings.model == "nvidia_nim/nvidia/nemotron-3-super-120b-a12b"
+    assert settings.model == "nvidia_nim/meta/llama-3.3-70b-instruct"
 
 
 def test_invalid_key_is_not_saved(monkeypatch, tmp_path):
     client = _client(monkeypatch, tmp_path)
     with patch(
-        "free_claude_code.api.admin_routes._verify_nova_nvidia_key",
+        "free_claude_code.api.admin_routes._verify_opus_nvidia_key",
         AsyncMock(return_value={"ok": False, "message": "rejected"}),
     ):
         result = client.post(
-            "/admin/api/nova/configure", json={"api_key": "definitely-not-valid"}
+            "/admin/api/opus/configure", json={"api_key": "definitely-not-valid"}
         ).json()
     assert result == {"ok": False, "message": "rejected"}
     fields = {
@@ -79,7 +79,7 @@ def test_verified_key_is_saved_but_never_returned(monkeypatch, tmp_path):
     client = _client(monkeypatch, tmp_path)
     with (
         patch(
-            "free_claude_code.api.admin_routes._verify_nova_nvidia_key",
+            "free_claude_code.api.admin_routes._verify_opus_nvidia_key",
             AsyncMock(return_value={"ok": True}),
         ),
         patch(
@@ -88,7 +88,7 @@ def test_verified_key_is_saved_but_never_returned(monkeypatch, tmp_path):
         ),
     ):
         result = client.post(
-            "/admin/api/nova/configure", json={"api_key": "test-secret-value"}
+            "/admin/api/opus/configure", json={"api_key": "test-secret-value"}
         ).json()
     assert result == {"ok": True}
     response = client.get("/admin/api/config").text
@@ -99,13 +99,13 @@ def test_verified_key_is_saved_but_never_returned(monkeypatch, tmp_path):
 def test_installer_and_uninstaller_are_scoped():
     install = (ROOT / "scripts/install.sh").read_text(encoding="utf-8")
     uninstall = (ROOT / "scripts/uninstall.sh").read_text(encoding="utf-8")
-    assert "nova-code-bridge" in install
+    assert "opus-5-5" in install
     assert "fcc-server" in install and "fcc-claude" in install
     assert "127.0.0.1:8182" in install
     assert 'type="password"' in install
     assert "~/.fcc" not in install
     assert 'uv tool uninstall "$PACKAGE"' in uninstall
-    assert ".nova-code/tools" in uninstall
+    assert ".opus-5-5/tools" in uninstall
     assert "mv " not in uninstall
     assert "free-claude-code" not in uninstall
 
@@ -133,7 +133,7 @@ def test_repository_contains_no_probable_live_nvidia_key():
 async def test_verification_uses_generation_and_does_not_echo_provider_errors():
     import httpx
 
-    from free_claude_code.api.admin_routes import _verify_nova_nvidia_key
+    from free_claude_code.api.admin_routes import _verify_opus_nvidia_key
 
     secret = "synthetic-verification-secret"
     for status, body, expected in [
@@ -143,7 +143,7 @@ async def test_verification_uses_generation_and_does_not_echo_provider_errors():
     ]:
         post = AsyncMock(return_value=httpx.Response(status, json=body))
         with patch("httpx.AsyncClient.post", post):
-            result = await _verify_nova_nvidia_key(secret)
+            result = await _verify_opus_nvidia_key(secret)
         assert result["ok"] is expected
         assert secret not in str(result)
         assert post.call_args.args[0].endswith("/chat/completions")

@@ -45,14 +45,14 @@ def test_codex_catalog_uses_direct_configured_and_cached_model_slugs() -> None:
     catalog = build_codex_model_catalog(
         catalog_models_from_response(
             _models_payload(
-                "nvidia_nim/nvidia/nemotron-3-super",
+                "nvidia_nim/meta/llama-3.3-70b-instruct",
                 "open_router/meta-llama/llama-3.3-70b",
             )
         )
     )
 
     assert _slugs(catalog) == [
-        "nvidia_nim/nvidia/nemotron-3-super",
+        "nvidia_nim/meta/llama-3.3-70b-instruct",
         "open_router/meta-llama/llama-3.3-70b",
     ]
     model = _catalog_models(catalog)[0]

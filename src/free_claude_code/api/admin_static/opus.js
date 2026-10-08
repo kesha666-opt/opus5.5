@@ -29,7 +29,7 @@ function safeMessage(value, fallback) {
 async function verifyProvider() {
   setStatus("neutral", "Проверяем NVIDIA…", "Выполняется короткий проверочный запрос к модели NVIDIA.");
   try {
-    const result = await request("/admin/api/nova/verify", { method: "POST", body: "{}" });
+    const result = await request("/admin/api/opus/verify", { method: "POST", body: "{}" });
     if (!result.ok) throw new Error(result.message || "NVIDIA отклонила запрос.");
     setStatus("ok", "Подключение работает", "NVIDIA выполнила проверочный запрос. Можно запускать fcc-claude.");
   } catch (error) {
@@ -44,7 +44,7 @@ async function loadState() {
     const key = fields.get("NVIDIA_NIM_API_KEY");
     if (key?.locked) {
       keyInput.disabled = true; saveButton.disabled = true;
-      setStatus("error", "Настройка заблокирована", "Ключ задан переменной окружения. Уберите её и перезапустите Nova Code.");
+      setStatus("error", "Настройка заблокирована", "Ключ задан переменной окружения. Уберите её и перезапустите Opus 5.5.");
     } else if (key?.configured) {
       keyInput.placeholder = "Ключ сохранён — введите новый для замены";
       setStatus("neutral", "Ключ сохранён", "Проверяем текущее подключение.");
@@ -71,7 +71,7 @@ form.addEventListener("submit", async (event) => {
   saveButton.disabled = true; keyInput.disabled = true;
   setStatus("neutral", "Сохраняем и проверяем…", "Ключ остаётся в локальном файле настроек.");
   try {
-    const result = await request("/admin/api/nova/configure", { method: "POST", body: JSON.stringify({ api_key: apiKey }) });
+    const result = await request("/admin/api/opus/configure", { method: "POST", body: JSON.stringify({ api_key: apiKey }) });
     keyInput.value = ""; keyInput.type = "password"; toggleKey.textContent = "Показать";
     if (!result.ok) {
       throw new Error(result.message || "Ключ не принят.");

@@ -49,12 +49,13 @@ def test_retired_chat_urls_are_not_served(path):
     assert client.get(path).status_code == 404
 
 
-def test_admin_retains_code_without_chat_markup():
+def test_admin_setup_panel_has_no_chat_markup():
     client = _local_client(create_test_app())
     response = client.get("/admin")
     assert response.status_code == 200
-    assert 'id="view-code"' in response.text
-    assert 'id="view-chat"' not in response.text
+    assert 'id="keyForm"' in response.text
+    assert 'id="apiKey"' in response.text
+    assert "Opus 5.5" in response.text
     assert "chat_sessions" not in response.text
     assert client.get("/admin/code").status_code == 200
 
@@ -184,18 +185,11 @@ def test_admin_page_uses_installed_version(monkeypatch, tmp_path):
     response = _local_client(create_test_app()).get("/admin")
 
     assert response.status_code == 200
-    assert "<p>Server Control · v9.8.7</p>" in response.text
-    assert 'href="https://github.com/Alishahryar1/free-claude-code"' in response.text
+    assert 'href="https://github.com/kesha666-opt/opus-5-5"' in response.text
     assert 'target="_blank"' in response.text
     assert 'rel="noopener noreferrer"' in response.text
-    assert 'aria-label="Open Free Claude Code on GitHub"' in response.text
-    assert 'src="/admin/assets/9.8.7/app-icon.svg"' in response.text
-    assert 'href="/admin/assets/9.8.7/admin.css"' in response.text
-    assert 'href="/admin/assets/9.8.7/code_sessions.css"' in response.text
-    assert 'src="/admin/assets/9.8.7/model_combobox.js"' in response.text
-    assert 'src="/admin/assets/9.8.7/form_controls.js"' in response.text
-    assert 'src="/admin/assets/9.8.7/code_sessions.js"' in response.text
-    assert 'src="/admin/assets/9.8.7/admin.js"' in response.text
+    assert 'href="/admin/assets/9.8.7/opus.css"' in response.text
+    assert 'src="/admin/assets/9.8.7/opus.js"' in response.text
     assert 'href="/admin/assets/admin.css"' not in response.text
     assert 'href="/admin/assets/code_sessions.css"' not in response.text
     assert 'src="/admin/assets/code_sessions.js"' not in response.text
@@ -2039,7 +2033,7 @@ def test_admin_never_reads_arbitrary_current_directory_env(monkeypatch, tmp_path
 
     config = _local_client(app).get("/admin/api/config").json()
     model_field = next(field for field in config["fields"] if field["key"] == "MODEL")
-    assert model_field["value"] == "nvidia_nim/nvidia/nemotron-3-super-120b-a12b"
+    assert model_field["value"] == "nvidia_nim/meta/llama-3.3-70b-instruct"
     assert model_field["source"] == "default"
 
     response = _local_client(app).post(

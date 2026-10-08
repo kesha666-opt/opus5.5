@@ -47,8 +47,8 @@ _ADMIN_ASSET_MEDIA_TYPES = {
 }
 _ADMIN_ASSET_FILENAMES = frozenset(
     {
-        "nova.css",
-        "nova.js",
+        "opus.css",
+        "opus.js",
         "admin.css",
         "admin.js",
         "form_controls.js",
@@ -87,15 +87,15 @@ class ConnectedAccountLoginPayload(BaseModel):
     mode: ConnectedAccountLoginMode | None = None
 
 
-class NovaNvidiaPayload(BaseModel):
+class OpusNvidiaPayload(BaseModel):
     """NVIDIA key submitted by the focused local setup panel."""
 
     api_key: str = Field(min_length=1, max_length=4096)
 
 
-NOVA_NVIDIA_MODEL = "nvidia/nemotron-3-super-120b-a12b"
-NOVA_MODEL_REF = f"nvidia_nim/{NOVA_NVIDIA_MODEL}"
-NOVA_NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
+OPUS_NVIDIA_MODEL = "meta/llama-3.3-70b-instruct"
+OPUS_MODEL_REF = f"nvidia_nim/{OPUS_NVIDIA_MODEL}"
+OPUS_NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 
 
 def _asset_path(filename: str) -> Path:
@@ -201,19 +201,19 @@ async def test_provider(
     return await services.admin.test_provider(provider_id)
 
 
-async def _verify_nova_nvidia_key(api_key: str) -> JsonObject:
+async def _verify_opus_nvidia_key(api_key: str) -> JsonObject:
     """Verify authorization with a tiny inference request, never a public catalog."""
 
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
             response = await client.post(
-                NOVA_NVIDIA_CHAT_URL,
+                OPUS_NVIDIA_CHAT_URL,
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Accept": "application/json",
                 },
                 json={
-                    "model": NOVA_NVIDIA_MODEL,
+                    "model": OPUS_NVIDIA_MODEL,
                     "messages": [{"role": "user", "content": "Reply OK."}],
                     "max_tokens": 2,
                     "temperature": 0,
@@ -245,9 +245,9 @@ async def _verify_nova_nvidia_key(api_key: str) -> JsonObject:
     }
 
 
-@router.post("/admin/api/nova/configure")
-async def configure_nova_nvidia(
-    payload: NovaNvidiaPayload,
+@router.post("/admin/api/opus/configure")
+async def configure_opus_nvidia(
+    payload: OpusNvidiaPayload,
     request: Request,
     services: ApiServices = Depends(get_services),
 ):
@@ -255,19 +255,19 @@ async def configure_nova_nvidia(
     api_key = payload.api_key.strip()
     if not api_key:
         return {"ok": False, "message": "Enter an NVIDIA API key."}
-    verification = await _verify_nova_nvidia_key(api_key)
+    verification = await _verify_opus_nvidia_key(api_key)
     if not verification["ok"]:
         return verification
     result = await services.admin.apply_admin_config(
-        {"NVIDIA_NIM_API_KEY": api_key, "MODEL": NOVA_MODEL_REF}
+        {"NVIDIA_NIM_API_KEY": api_key, "MODEL": OPUS_MODEL_REF}
     )
     if not result.get("applied"):
         return {"ok": False, "message": "The verified key could not be saved."}
     return {"ok": True}
 
 
-@router.post("/admin/api/nova/verify")
-async def verify_saved_nova_nvidia(
+@router.post("/admin/api/opus/verify")
+async def verify_saved_opus_nvidia(
     request: Request,
     services: ApiServices = Depends(get_services),
 ):
@@ -277,7 +277,7 @@ async def verify_saved_nova_nvidia(
     api_key = entry.value.strip() if entry and entry.value else ""
     if not api_key:
         return {"ok": False, "message": "No NVIDIA API key is saved."}
-    return await _verify_nova_nvidia_key(api_key)
+    return await _verify_opus_nvidia_key(api_key)
 
 
 @router.get("/admin/api/providers/{provider_id}/auth")

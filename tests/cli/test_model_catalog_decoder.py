@@ -11,8 +11,8 @@ def test_client_models_project_nested_direct_refs_in_source_order() -> None:
         {
             "data": [
                 {
-                    "id": "nvidia_nim/nvidia/nemotron-3-super",
-                    "provider_model_ref": "nvidia_nim/nvidia/nemotron-3-super",
+                    "id": "nvidia_nim/meta/llama-3.3-70b-instruct",
+                    "provider_model_ref": "nvidia_nim/meta/llama-3.3-70b-instruct",
                     "display_name": "Display 0",
                 },
                 {
@@ -24,8 +24,8 @@ def test_client_models_project_nested_direct_refs_in_source_order() -> None:
         }
     ) == (
         CatalogModel(
-            wire_slug="nvidia_nim/nvidia/nemotron-3-super",
-            provider_model_ref="nvidia_nim/nvidia/nemotron-3-super",
+            wire_slug="nvidia_nim/meta/llama-3.3-70b-instruct",
+            provider_model_ref="nvidia_nim/meta/llama-3.3-70b-instruct",
             display_name="Display 0",
             supports_reasoning=None,
         ),

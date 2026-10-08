@@ -21,7 +21,7 @@ def _print_version_if_requested(argv: Sequence[str] | None) -> bool:
     args = sys.argv[1:] if argv is None else argv
     if "--version" not in args:
         return False
-    print(f"nova-code-bridge {package_version()}")
+    print(f"opus-5-5 {package_version()}")
     return True
 
 

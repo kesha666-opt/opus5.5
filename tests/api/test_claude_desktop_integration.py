@@ -110,7 +110,7 @@ def test_managed_desktop_error_is_safe(client, monkeypatch):
 
 
 def test_desktop_model_view_preserves_labels_and_query_precedence():
-    ref = "nvidia_nim/nemotron-3.5"
+    ref = "nvidia_nim/model-test-3.5"
     settings = Settings().model_copy(
         update={
             "model": ref,

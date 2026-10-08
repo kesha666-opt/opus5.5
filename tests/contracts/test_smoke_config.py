@@ -837,7 +837,7 @@ def test_openrouter_provider_smoke_uses_concrete_free_model(monkeypatch) -> None
     models = config.provider_smoke_models()
 
     assert [model.provider for model in models] == ["open_router"]
-    assert models[0].full_model == "open_router/nvidia/nemotron-3-super-120b-a12b:free"
+    assert models[0].full_model == "open_router/meta/llama-3.3-70b-instruct:free"
     assert models[0].source == "provider_default"
 
 
@@ -1077,7 +1077,7 @@ def test_provider_smoke_model_override_accepts_owner_model_name(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv(
-        "FCC_SMOKE_MODEL_NVIDIA_NIM", "nvidia/nemotron-3-super-120b-a12b"
+        "FCC_SMOKE_MODEL_NVIDIA_NIM", "meta/llama-3.3-70b-instruct"
     )
     config = _smoke_config(
         settings=_settings(
@@ -1091,7 +1091,7 @@ def test_provider_smoke_model_override_accepts_owner_model_name(
 
     models = config.provider_smoke_models()
 
-    assert models[0].full_model == "nvidia_nim/nvidia/nemotron-3-super-120b-a12b"
+    assert models[0].full_model == "nvidia_nim/meta/llama-3.3-70b-instruct"
     assert models[0].source == "FCC_SMOKE_MODEL_NVIDIA_NIM"
 
 
@@ -1222,10 +1222,10 @@ def test_nvidia_nim_cli_default_models_are_normalized() -> None:
     refs = nvidia_nim_cli_model_refs({})
 
     assert tuple(refs) == (
-        "nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b",
+        "nvidia_nim/nvidia/model-test-lightning",
         "nvidia_nim/moonshotai/kimi-k3",
         "nvidia_nim/minimaxai/minimax-m3",
-        "nvidia_nim/nvidia/nemotron-3-super-120b-a12b",
+        "nvidia_nim/meta/llama-3.3-70b-instruct",
     )
     assert set(refs.values()) == {"nvidia_nim_cli_default"}
 
@@ -1305,7 +1305,7 @@ def test_openrouter_free_cli_default_models_are_normalized() -> None:
     refs = openrouter_free_cli_model_refs({})
 
     assert tuple(refs) == (
-        "open_router/nvidia/nemotron-3-super-120b-a12b:free",
+        "open_router/meta/llama-3.3-70b-instruct:free",
         "open_router/poolside/laguna-s-2.1:free",
         "open_router/poolside/laguna-xs-2.1:free",
     )
@@ -1370,7 +1370,7 @@ def test_smoke_config_returns_openrouter_free_cli_provider_models(monkeypatch) -
     models = config.openrouter_free_cli_models()
 
     assert models[0].provider == "open_router"
-    assert models[0].full_model == "open_router/nvidia/nemotron-3-super-120b-a12b:free"
+    assert models[0].full_model == "open_router/meta/llama-3.3-70b-instruct:free"
     assert models[0].source == "openrouter_free_cli_default"
 
 

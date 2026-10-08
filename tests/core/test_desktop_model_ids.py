@@ -9,7 +9,7 @@ from free_claude_code.core.gateway_model_ids import (
 @pytest.mark.parametrize(
     "ref",
     [
-        "nvidia_nim/nemotron-3.5",
+        "nvidia_nim/model-test-3.5",
         "open_router/qwen/qwen3",
         "openai/gpt-5",
         "open_router/模型/one",
@@ -19,7 +19,7 @@ from free_claude_code.core.gateway_model_ids import (
 def test_desktop_ids_roundtrip_without_vendor_fragments(ref, no_thinking):
     wire = desktop_model_id(ref, no_thinking=no_thinking)
     assert wire.startswith("claude-")
-    assert not any(part in wire for part in ("gpt", "qwen", "nemotron", "openai"))
+    assert not any(part in wire for part in ("gpt", "qwen", "model-test", "openai"))
     decoded = decode_gateway_model_id(wire)
     assert decoded is not None
     assert f"{decoded.provider_id}/{decoded.provider_model}" == ref

@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs>=0.5.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "nova-code-bridge"
+name = "opus-5-5"
 version = "0.1.0"
 description = "A focused NVIDIA NIM gateway for Claude Code"
 readme = "README.md"

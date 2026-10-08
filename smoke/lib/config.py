@@ -49,9 +49,9 @@ TARGET_ALIASES = {
 SECRET_KEY_PARTS = ("KEY", "TOKEN", "SECRET", "WEBHOOK", "AUTH")
 
 PROVIDER_SMOKE_DEFAULT_MODELS: dict[str, str] = {
-    "nvidia_nim": "nvidia_nim/nvidia/nemotron-3-super-120b-a12b",
+    "nvidia_nim": "nvidia_nim/meta/llama-3.3-70b-instruct",
     "azure_openai": "azure_openai/gpt-5.1",
-    "open_router": "open_router/nvidia/nemotron-3-super-120b-a12b:free",
+    "open_router": "open_router/meta/llama-3.3-70b-instruct:free",
     "mistral": "mistral/devstral-small-latest",
     "mistral_codestral": "mistral_codestral/codestral-latest",
     "deepseek": "deepseek/deepseek-v4-pro",
@@ -107,14 +107,14 @@ PROVIDER_SMOKE_DEFAULT_MODELS: dict[str, str] = {
 MISTRAL_REASONING_SMOKE_DEFAULT_MODEL = "mistral/mistral-medium-3-5"
 
 NVIDIA_NIM_CLI_DEFAULT_MODELS: tuple[str, ...] = (
-    "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "nvidia/model-test-lightning",
     "moonshotai/kimi-k3",
     "minimaxai/minimax-m3",
-    "nvidia/nemotron-3-super-120b-a12b",
+    "meta/llama-3.3-70b-instruct",
 )
 
 OPENROUTER_FREE_CLI_DEFAULT_MODELS: tuple[str, ...] = (
-    "nvidia/nemotron-3-super-120b-a12b:free",
+    "meta/llama-3.3-70b-instruct:free",
     "poolside/laguna-s-2.1:free",
     "poolside/laguna-xs-2.1:free",
 )

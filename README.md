@@ -1,6 +1,6 @@
-# Nova Code
+# Opus 5.5
 
-Локальный шлюз NVIDIA NIM для Claude Code. Название этой сборки — **Nova Code**. Финальный дизайн панели будет заменён отдельно; сейчас доступна рабочая форма ввода ключа.
+**Opus 5.5** — локальный шлюз для работы Claude Code через совместимый API. Claude Code остаётся клиентом; эта сборка не предоставляет и не выдаёт себя за модель Claude Opus.
 
 > Исходники находятся в приватном репозитории. Для установки нужна авторизация GitHub с доступом к нему. [Фактические результаты проверок](VERIFICATION.md).
 
@@ -9,32 +9,30 @@
 **macOS / Linux:**
 
 ```sh
-gh repo clone kesha666-opt/nova-code-bridge && sh nova-code-bridge/scripts/install.sh
+gh repo clone kesha666-opt/opus-5-5 && sh opus-5-5/scripts/install.sh
 ```
 
 **Windows PowerShell:**
 
 ```powershell
-gh repo clone kesha666-opt/nova-code-bridge; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File nova-code-bridge/scripts/install.ps1 }
+gh repo clone kesha666-opt/opus-5-5; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File opus-5-5/scripts/install.ps1 }
 ```
 
-Установщик подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели — только ключ NVIDIA, кнопка проверки и статус. После успешной проверки запустите `fcc-claude`.
+Установщик подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели вводится только ключ NVIDIA; после успешной проверки запускайте `fcc-claude`.
 
-Все служебные шаги находятся внутри двух установщиков. В Linux без графического окружения откройте панель вручную на том же компьютере. Если команды нет в PATH: `~/.local/bin/fcc-claude` на macOS/Linux или `& "$env:USERPROFILE\.local\bin\fcc-claude.exe"` на Windows.
+В Linux без графического окружения откройте панель вручную на том же компьютере. Если команды нет в PATH: `~/.local/bin/fcc-claude` на macOS/Linux или `& "$env:USERPROFILE\.local\bin\fcc-claude.exe"` на Windows.
 
 ## Изоляция и ключ
 
-Порт `8182`, адрес `127.0.0.1`, настройки `~/.nova-code`, пакет в `~/.nova-code/tools`. Установщики **останавливаются**, если `fcc-server`/`fcc-claude` уже существуют или порт занят. Для генеральной установки рядом с исходным FCC нужен отдельный пользователь ОС. Исходный FCC, `~/.fcc`, порт `8082` и глобальные uv tools не изменяются.
+Порт `8182`, адрес `127.0.0.1`, настройки `~/.opus-5-5`, пакет в `~/.opus-5-5/tools`. Установщики **останавливаются**, если `fcc-server`/`fcc-claude` уже существуют или порт занят. Исходный FCC, `~/.fcc`, порт `8082` и глобальные uv tools не изменяются.
 
-Проверка ключа отправляет короткий запрос генерации NVIDIA. Неверный ключ не сохраняется. После успешной проверки ключ сохраняется только в локальном `~/.nova-code/.env`; API возвращает маску. Не вводите ключ в команды, GitHub или чат. Не передавайте файл `.env` и журналы другим людям. Установщик не копирует настройки и ключи в резервные файлы.
-
-Фактическая модель: `nvidia/nemotron-3-super-120b-a12b`. Это не Claude Opus; Claude Code — клиент. Доступность, квоты и условия определяет NVIDIA. Клиентские названия `claude-opus-*` и расчёт стоимости не доказывают обращение к Anthropic.
+Проверка ключа отправляет короткий запрос генерации. Неверный ключ не сохраняется. После успеха ключ хранится только в локальном `~/.opus-5-5/.env`; API возвращает маску. Не вводите ключ в команды, GitHub или чат.
 
 ## Проверки
 
-`uv run pytest -q -n 0 tests/nova tests/cli/test_claude_launcher.py tests/providers/test_nvidia_nim.py tests/providers/test_nvidia_nim_native_tool_stream.py`
+`uv run pytest -q -n 0 tests/opus tests/cli/test_claude_launcher.py tests/providers/test_nvidia_nim.py tests/providers/test_nvidia_nim_native_tool_stream.py`
 
-GitHub Actions проверяет установку приватного архива на macOS, Linux и Windows, `/health`, `/admin` и `fcc-claude --version`. Наличие workflow не означает успешный прогон: смотрите фактический результат Actions. Реальная генерация с действительным ключом требует его локального ввода владельцем.
+GitHub Actions проверяет чистую установку приватного архива на macOS, Linux и Windows, `/health`, `/admin` и клиент на Unix. Реальная генерация с действительным ключом требует локального ввода владельцем.
 
 ## Лицензия
 

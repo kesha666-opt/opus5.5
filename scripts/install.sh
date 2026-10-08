@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 umask 077
-REPOSITORY="kesha666-opt/nova-code-bridge"
-PACKAGE="nova-code-bridge"
+REPOSITORY="kesha666-opt/opus-5-5"
+PACKAGE="opus-5-5"
 ADMIN_URL="http://127.0.0.1:8182/admin"
 HEALTH_URL="http://127.0.0.1:8182/health"
 fail() { printf 'Ошибка: %s\n' "$1" >&2; exit 1; }
@@ -34,7 +34,7 @@ command -v curl >/dev/null || fail 'Требуется curl.'
 if curl -s --connect-timeout 2 "$HEALTH_URL" >/dev/null 2>&1; then fail 'Порт 8182 занят. Установка остановлена без изменения сервера.'; fi
 archive_dir=$(mktemp -d)
 trap 'rm -rf "$archive_dir" "$bootstrap_dir"' EXIT HUP INT TERM
-commit=$(gh api "repos/$REPOSITORY/commits/${NOVA_REF:-main}" --jq .sha)
+commit=$(gh api "repos/$REPOSITORY/commits/${OPUS_REF:-main}" --jq .sha)
 case "$commit" in ''|*[!0-9a-f]*) fail 'GitHub вернул неверный commit.' ;; esac
 [ "${#commit}" = 40 ] || fail 'GitHub вернул неверный commit.'
 gh api "repos/$REPOSITORY/zipball/$commit" > "$archive_dir/source.zip"
@@ -43,7 +43,7 @@ if ! command -v uv >/dev/null; then
  UV_NO_MODIFY_PATH=1 sh "$archive_dir/uv.sh"
 fi
 # Dedicated tool environment and bin directory; no --force and no global uv tools.
-export UV_TOOL_DIR="$HOME/.nova-code/tools"
+export UV_TOOL_DIR="$HOME/.opus-5-5/tools"
 export UV_TOOL_BIN_DIR="$HOME/.local/bin"
 uv tool install "$archive_dir/source.zip"
 if ! command -v claude >/dev/null; then
@@ -51,24 +51,24 @@ if ! command -v claude >/dev/null; then
  bash "$archive_dir/claude.sh"
 fi
 command -v claude >/dev/null || fail 'Claude Code не найден после установки.'
-mkdir -p "$HOME/.nova-code/logs"
-printf '%s\n' "$commit" > "$HOME/.nova-code/installed-commit"
+mkdir -p "$HOME/.opus-5-5/logs"
+printf '%s\n' "$commit" > "$HOME/.opus-5-5/installed-commit"
 # Ignore inherited FCC routing/configuration overrides in this installation.
 unset FCC_ENV_FILE NVIDIA_NIM_API_KEY
 export HOST=127.0.0.1 PORT=8182
-nohup "$HOME/.local/bin/fcc-server" > "$HOME/.nova-code/logs/launcher.log" 2>&1 < /dev/null &
+nohup "$HOME/.local/bin/fcc-server" > "$HOME/.opus-5-5/logs/launcher.log" 2>&1 < /dev/null &
 server_pid=$!
 ready=0
 attempt=0
 while [ "$attempt" -lt 60 ]; do
- if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"service":"nova-code-bridge"'; then ready=1; break; fi
+ if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"service":"opus-5-5"'; then ready=1; break; fi
  kill -0 "$server_pid" 2>/dev/null || break
  attempt=$((attempt + 1)); sleep 1
 done
-[ "$ready" = 1 ] || fail 'Сервер не запустился. Диагностика: ~/.nova-code/logs/launcher.log'
-curl -fsS "$ADMIN_URL" | grep -q 'type="password"' || fail 'Панель Nova Code не ответила ожидаемой формой.'
-printf '%s\n' "$server_pid" > "$HOME/.nova-code/server.pid"
-if [ "${NOVA_NO_OPEN:-0}" != 1 ]; then
+[ "$ready" = 1 ] || fail 'Сервер не запустился. Диагностика: ~/.opus-5-5/logs/launcher.log'
+curl -fsS "$ADMIN_URL" | grep -q 'type="password"' || fail 'Панель Opus 5.5 не ответила ожидаемой формой.'
+printf '%s\n' "$server_pid" > "$HOME/.opus-5-5/server.pid"
+if [ "${OPUS_NO_OPEN:-0}" != 1 ]; then
  case "$(uname -s)" in Darwin) open "$ADMIN_URL" ;; Linux) if command -v xdg-open >/dev/null; then xdg-open "$ADMIN_URL" >/dev/null 2>&1 || true; fi ;; esac
 fi
-printf '\nNova Code установлен: %s\nПанель: %s\nВведите ключ в панели, затем запускайте fcc-claude.\nЕсли команда не найдена: ~/.local/bin/fcc-claude\n' "$commit" "$ADMIN_URL"
+printf '\nOpus 5.5 установлен: %s\nПанель: %s\nВведите ключ в панели, затем запускайте fcc-claude.\nЕсли команда не найдена: ~/.local/bin/fcc-claude\n' "$commit" "$ADMIN_URL"

@@ -2,8 +2,8 @@
 [CmdletBinding()]
 param([string]$Ref = 'main', [switch]$NoOpen)
 $ErrorActionPreference = 'Stop'
-$Repository = 'kesha666-opt/nova-code-bridge'
-$Root = Join-Path $env:USERPROFILE '.nova-code'
+$Repository = 'kesha666-opt/opus-5-5'
+$Root = Join-Path $env:USERPROFILE '.opus-5-5'
 $Bin = Join-Path $env:USERPROFILE '.local\bin'
 $Health = 'http://127.0.0.1:8182/health'
 $Admin = 'http://127.0.0.1:8182/admin'
@@ -65,13 +65,13 @@ try {
  $Process = Start-Process (Join-Path $Bin 'fcc-server.exe') -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $Root 'logs\launcher.log') -RedirectStandardError (Join-Path $Root 'logs\launcher-error.log')
  $Ready = $false
  for ($i = 0; $i -lt 60; $i++) {
-  try { $Result = Invoke-RestMethod $Health -TimeoutSec 2; if ($Result.service -eq 'nova-code-bridge') { $Ready = $true; break } } catch {}
+  try { $Result = Invoke-RestMethod $Health -TimeoutSec 2; if ($Result.service -eq 'opus-5-5') { $Ready = $true; break } } catch {}
   if ($Process.HasExited) { break }; Start-Sleep 1
  }
  if (-not $Ready) { throw "Server failed to start. See $Root\logs" }
  $Panel = Invoke-WebRequest $Admin -UseBasicParsing -TimeoutSec 10
- if ($Panel.Content -notmatch 'Nova Code' -or $Panel.Content -notmatch 'type="password"') { throw 'Nova Code panel did not return the expected form.' }
+ if ($Panel.Content -notmatch 'Opus 5.5' -or $Panel.Content -notmatch 'type="password"') { throw 'Opus 5.5 panel did not return the expected form.' }
  Set-Content (Join-Path $Root 'server.pid') $Process.Id
  if (-not $NoOpen) { Start-Process $Admin }
- Write-Host "Nova Code installed: $Commit`nPanel: $Admin`nEnter your NVIDIA key in the panel, then run: fcc-claude`nFull path: $Bin\fcc-claude.exe"
+ Write-Host "Opus 5.5 installed: $Commit`nPanel: $Admin`nEnter your NVIDIA key in the panel, then run: fcc-claude`nFull path: $Bin\fcc-claude.exe"
 } finally { Remove-Item $TempDir -Recurse -Force }
