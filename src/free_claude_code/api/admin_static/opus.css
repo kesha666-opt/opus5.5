@@ -1,47 +1,59 @@
 :root {
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #f4f7fb;
-  background: #07111f;
+  color: #f2f5fa;
+  background: #060a10;
   font-synthesis: none;
 }
-
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body {
-  margin: 0; min-width: 320px; min-height: 100vh;
-  background: radial-gradient(circle at 18% 10%, rgba(50, 204, 160, .16), transparent 34rem), radial-gradient(circle at 86% 84%, rgba(72, 110, 255, .14), transparent 32rem), #07111f;
-}
-.shell { min-height: 100vh; display: grid; place-items: center; padding: 28px 18px; }
-.panel { width: min(100%, 460px); padding: 38px; border: 1px solid rgba(255, 255, 255, .09); border-radius: 28px; background: rgba(13, 27, 45, .9); box-shadow: 0 30px 90px rgba(0, 0, 0, .38); backdrop-filter: blur(20px); }
-.brand { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
-.mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(145deg, #63e6be, #25a77c); box-shadow: 0 10px 30px rgba(37, 167, 124, .28); }
-.mark span { width: 18px; height: 18px; border: 4px solid #07111f; border-radius: 50%; box-shadow: 8px -7px 0 -4px #07111f; }
-.eyebrow { margin: 0 0 2px; color: #8092a9; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
-.intro h2 { margin: 0 0 10px; font-size: clamp(28px, 6vw, 42px); line-height: 1.05; letter-spacing: -.04em; }
-.intro p { margin: 0; max-width: 500px; color: #9baabd; font-size: 16px; line-height: 1.55; }
-form { margin-top: 24px; }
-label { display: block; margin-bottom: 10px; color: #dce5ef; font-size: 14px; font-weight: 700; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+body { min-width: 320px; min-height: 100vh; margin: 0; background: radial-gradient(ellipse at 13% 20%, rgba(98, 215, 45, .07), transparent 34rem), radial-gradient(ellipse at 78% 76%, rgba(110, 125, 151, .06), transparent 36rem), #060a10; }
+.shell { display: grid; min-height: 100vh; place-items: center; padding: 28px 18px; }
+.panel { width: min(100%, 940px); padding: 38px 62px 32px; border: 1px solid #293241; border-radius: 21px; background: linear-gradient(135deg, rgba(18, 24, 33, .98), rgba(6, 11, 17, .98)); box-shadow: 0 34px 100px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.03); }
+.window-bar { display: flex; align-items: center; justify-content: space-between; }
+.nvidia-brand { display: inline-flex; align-items: center; gap: 15px; color: #f8f8fa; font-family: Arial, sans-serif; font-size: 44px; font-weight: 800; letter-spacing: -3px; }
+.nvidia-mark { position: relative; display: inline-block; width: 72px; height: 50px; overflow: hidden; background: linear-gradient(90deg, transparent 0 45%, #76b900 45%); }
+.nvidia-mark::before, .nvidia-mark::after { position: absolute; content: ""; border: 6px solid #76b900; border-radius: 50%; transform: skewX(16deg); }
+.nvidia-mark::before { top: 7px; left: 4px; width: 49px; height: 27px; }
+.nvidia-mark::after { top: 15px; left: 19px; width: 22px; height: 12px; border-width: 5px; }
+.nvidia-mark i { position: absolute; z-index: 1; top: 21px; left: 35px; width: 9px; height: 9px; border-radius: 50%; background: #76b900; }
+.window-actions { display: flex; align-items: center; gap: 28px; color: #b7c0d1; }
+.window-actions i { width: 23px; height: 2px; background: currentColor; }
+.window-actions b { position: relative; width: 24px; height: 24px; }
+.window-actions b::before, .window-actions b::after { position: absolute; top: 11px; width: 27px; height: 2px; content: ""; background: currentColor; transform: rotate(45deg); }
+.window-actions b::after { transform: rotate(-45deg); }
+.intro { margin-top: 65px; }
+h1 { margin: 0; font-size: clamp(34px, 5vw, 57px); letter-spacing: -.045em; line-height: 1.04; }
+.intro p { max-width: 720px; margin: 15px 0 0; color: #adb7ca; font-size: clamp(19px, 2.5vw, 31px); line-height: 1.4; letter-spacing: -.02em; }
+.intro strong { color: #76e748; font-weight: 600; }
+form { margin-top: 41px; }
 .input-wrap { position: relative; }
-input { width: 100%; height: 56px; padding: 0 112px 0 16px; border: 1px solid #2a3b50; border-radius: 14px; outline: none; color: #f6f9fc; background: #091523; font: 500 16px/1 ui-monospace, SFMono-Regular, Menlo, monospace; transition: border-color .2s, box-shadow .2s; }
-input:focus { border-color: #51d7ad; box-shadow: 0 0 0 4px rgba(81, 215, 173, .12); }
-.reveal { position: absolute; inset: 7px 7px 7px auto; padding: 0 12px; border: 0; border-radius: 10px; color: #9fb0c4; background: #142438; cursor: pointer; }
-.hint { margin: 9px 0 18px; color: #74859b; font-size: 13px; line-height: 1.45; }
-button { font: inherit; }
-.primary { margin-top: 16px; width: 100%; min-height: 52px; border: 0; border-radius: 14px; color: #062018; background: linear-gradient(135deg, #6ce7c0, #35c997); font-weight: 800; cursor: pointer; box-shadow: 0 12px 28px rgba(53, 201, 151, .18); }
-.primary:hover { filter: brightness(1.05); }
-.primary:disabled { cursor: wait; opacity: .65; }
-.status { display: flex; align-items: flex-start; gap: 12px; margin-top: 24px; padding: 16px; border: 1px solid #26384d; border-radius: 14px; background: rgba(7, 17, 31, .62); }
-.status-dot { flex: 0 0 auto; width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; background: #8190a1; box-shadow: 0 0 0 5px rgba(129, 144, 161, .1); }
-.status strong { display: block; font-size: 14px; }
-.status p { margin: 3px 0 0; color: #8fa0b4; font-size: 13px; line-height: 1.45; }
-.status.ok { border-color: rgba(73, 214, 168, .3); background: rgba(32, 116, 90, .12); }
-.status.ok .status-dot { background: #53d9ad; box-shadow: 0 0 0 5px rgba(83, 217, 173, .12); }
-.status.error { border-color: rgba(255, 112, 112, .28); background: rgba(143, 42, 42, .12); }
-.status.error .status-dot { background: #ff7777; box-shadow: 0 0 0 5px rgba(255, 119, 119, .1); }
-.next { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; padding: 14px 16px; color: #99abbe; font-size: 13px; }
-.next code { padding: 8px 12px; border: 1px solid #2b4057; border-radius: 9px; color: #dffcf3; background: #091523; font-size: 14px; }
-footer { display: flex; justify-content: space-between; gap: 18px; margin-top: 42px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.07); color: #62758d; font-size: 12px; }
-footer a { color: #8198b3; text-decoration: none; }
-footer a:hover { color: #b8c9dc; }
-@media (max-width: 560px) { .panel { padding: 26px 20px; border-radius: 22px; } .brand { margin-bottom: 38px; } footer { flex-direction: column; } }
+input { width: 100%; height: 94px; padding: 0 127px 0 92px; border: 2px solid #62e532; border-radius: 16px; outline: none; color: #f8fafc; background: rgba(4, 10, 14, .72); box-shadow: 0 0 30px rgba(83, 235, 45, .16), inset 0 1px 0 rgba(255,255,255,.04); font: 500 27px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em; transition: border-color .2s, box-shadow .2s; }
+input::placeholder { color: #cad2e1; opacity: .92; }
+input:focus { border-color: #87ff59; box-shadow: 0 0 0 4px rgba(104, 232, 64, .14), 0 0 30px rgba(83, 235, 45, .18); }
+.key-icon { position: absolute; z-index: 1; top: 30px; left: 29px; width: 35px; height: 35px; fill: #c3cede; }
+.icon-button { position: absolute; top: 26px; width: 42px; height: 42px; padding: 0; border: 0; color: #b7c2d3; background: transparent; cursor: pointer; }
+.icon-button svg { width: 31px; height: 31px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.icon-button:hover { color: #f3f6fb; }
+.reveal { right: 71px; }
+.clear { right: 20px; }
+.status { display: flex; align-items: center; gap: 20px; min-height: 122px; margin-top: 29px; padding: 24px 30px; border: 1px solid #273645; border-radius: 16px; background: rgba(8, 17, 22, .66); }
+.status-dot { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background: #9ba6b5; box-shadow: 0 0 0 8px rgba(155,166,181,.08); }
+.status strong { display: block; color: #e5ebf3; font-size: 25px; letter-spacing: -.025em; }
+.status p { margin: 6px 0 0; color: #aeb9ca; font-size: 18px; }
+.status-provider { margin-left: auto; color: #b9c3d6; font-size: 18px; white-space: nowrap; }
+.status.ok { border-color: rgba(112, 230, 71, .55); background: linear-gradient(90deg, rgba(53, 138, 33, .17), rgba(5, 19, 14, .66)); box-shadow: 0 0 27px rgba(91,225,52,.1); }
+.status.ok .status-dot { background: #78f047; box-shadow: 0 0 20px rgba(112,235,67,.7), 0 0 0 8px rgba(112,235,67,.1); }
+.status.ok strong { color: #78ec4c; }
+.status.error { border-color: rgba(249, 114, 114, .65); background: rgba(99, 24, 24, .16); }
+.status.error .status-dot { background: #ff7f7f; box-shadow: 0 0 0 8px rgba(255,127,127,.1); }
+.actions { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 41px; }
+.local-only { color: #8995aa; font-size: 15px; }
+.primary { min-width: 360px; min-height: 77px; padding: 0 34px; border: 2px solid #87e85f; border-radius: 15px; color: white; background: linear-gradient(135deg, #63d900, #42b900); box-shadow: 0 14px 30px rgba(67, 196, 15, .29), inset 0 1px 0 rgba(255,255,255,.38); font: 700 22px/1 inherit; cursor: pointer; }
+.primary span { display: inline-block; margin-left: 26px; font-size: 38px; font-weight: 300; vertical-align: -4px; }
+.primary:hover { filter: brightness(1.08); }
+.primary:disabled { cursor: wait; opacity: .68; }
+footer { margin-top: 36px; text-align: center; font-size: 13px; }
+footer a { color: #8591a5; text-decoration: none; }
+footer a:hover { color: #c1ccdc; }
+@media (max-width: 700px) { .panel { padding: 29px 24px 27px; } .nvidia-brand { font-size: 32px; } .nvidia-mark { transform: scale(.78); transform-origin: left; margin-right: -12px; } .intro { margin-top: 42px; } input { height: 72px; padding-left: 64px; padding-right: 100px; font-size: 19px; } .key-icon { top: 23px; left: 20px; width: 27px; height: 27px; } .icon-button { top: 16px; } .reveal { right: 56px; } .clear { right: 11px; } .status { align-items: flex-start; min-height: 0; padding: 20px; } .status-dot { width: 19px; height: 19px; margin-top: 5px; } .status strong { font-size: 20px; } .status p { font-size: 15px; } .status-provider { display: none; } .actions { align-items: stretch; flex-direction: column-reverse; margin-top: 26px; } .primary { width: 100%; min-width: 0; min-height: 65px; font-size: 18px; } .local-only { text-align: center; } }

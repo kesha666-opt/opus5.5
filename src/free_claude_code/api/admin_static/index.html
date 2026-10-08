@@ -4,45 +4,49 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
-    <title>Opus 5.5 — подключение NVIDIA</title>
+    <title>Opus 5.5 — NVIDIA API</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/admin/assets/__FCC_VERSION__/opus.css" />
   </head>
   <body>
     <main class="shell">
       <section class="panel" aria-labelledby="title">
-        <header class="brand">
-          <span class="mark" aria-hidden="true"><span></span></span>
-          <div>
-            <h1 id="title">Opus 5.5</h1>
+        <header class="window-bar">
+          <div class="nvidia-brand" aria-label="NVIDIA">
+            <span class="nvidia-mark" aria-hidden="true"><i></i></span>
+            <span>NVIDIA</span>
           </div>
+          <div class="window-actions" aria-hidden="true"><i></i><b></b></div>
         </header>
 
+        <div class="intro">
+          <h1 id="title">Введите API ключ</h1>
+          <p>Вставьте ваш NVIDIA API‑ключ для подключения к <strong>Opus 5.5</strong> через NVIDIA API.</p>
+        </div>
+
         <form id="keyForm" novalidate>
-          <label for="apiKey">API‑ключ NVIDIA</label>
+          <label class="sr-only" for="apiKey">NVIDIA API‑ключ</label>
           <div class="input-wrap">
+            <svg class="key-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.4 3.4a6.1 6.1 0 0 0-5.9 7.8L2.6 17v4.4h4.5v-2.1h2.1v-2.1h2.2l1.1-1.1a6.1 6.1 0 1 0 1.9-12.6Zm3.5 6.1a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2Z"/></svg>
             <input id="apiKey" name="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="nvapi-…" required />
-            <button id="toggleKey" class="reveal" type="button" aria-label="Показать ключ">Показать</button>
+            <button id="toggleKey" class="icon-button reveal" type="button" aria-label="Показать ключ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.3 3.7 20.4 21.8M9.7 9.8a3.2 3.2 0 0 0 4.5 4.5M6.4 6.6C4.1 8.2 2.5 10.5 2 12c1.3 3.3 5.1 6 10 6 1.6 0 3.1-.3 4.4-.9M10 6.1c.7-.2 1.3-.3 2-.3 4.9 0 8.7 2.7 10 6.2-.5 1.2-1.6 2.8-3.2 4.1M13.8 8.3a3.2 3.2 0 0 1 2 2"/></svg></button>
+            <button id="clearKey" class="icon-button clear" type="button" aria-label="Очистить ключ" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
           </div>
-          <button id="saveButton" class="primary" type="submit">Сохранить и проверить</button>
+          <div id="status" class="status neutral" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <strong id="statusTitle">Нужен API‑ключ NVIDIA</strong>
+              <p id="statusText">Ключ проверяется коротким запросом и сохраняется только локально.</p>
+            </div>
+            <span class="status-provider">NVIDIA API</span>
+          </div>
+          <div class="actions">
+            <span class="local-only">Только локальное подключение</span>
+            <button id="saveButton" class="primary" type="submit">Сохранить и продолжить <span aria-hidden="true">→</span></button>
+          </div>
         </form>
 
-        <div id="status" class="status neutral" role="status" aria-live="polite">
-          <span class="status-dot" aria-hidden="true"></span>
-          <div>
-            <strong id="statusTitle">Проверяем состояние…</strong>
-            <p id="statusText">Подождите несколько секунд.</p>
-          </div>
-        </div>
-
-        <div class="next" id="nextStep" hidden>
-          <span>Готово к работе</span>
-          <code>fcc-claude</code>
-        </div>
-
-        <footer>
-          <a href="https://github.com/kesha666-opt/opus5.5" target="_blank" rel="noopener noreferrer">Исходный код и лицензия AGPL‑3.0</a>
-        </footer>
+        <footer><a href="https://github.com/kesha666-opt/opus5.5" target="_blank" rel="noopener noreferrer">Исходный код и лицензия AGPL‑3.0</a></footer>
       </section>
     </main>
     <script src="/admin/assets/__FCC_VERSION__/opus.js"></script>
