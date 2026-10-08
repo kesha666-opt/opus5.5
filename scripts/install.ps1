@@ -10,7 +10,18 @@ $Admin = 'http://127.0.0.1:8182/admin'
 function Assert-Exit { if ($LASTEXITCODE -ne 0) { throw "Command failed: exit $LASTEXITCODE" } }
 if ([Environment]::OSVersion.Platform -ne 'Win32NT') { throw 'This installer requires Windows.' }
 $env:PATH = "$Bin;$env:PATH"
-if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw 'Install GitHub CLI from https://cli.github.com and run again.' }
+if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+ $Bootstrap = Join-Path $Root 'bootstrap'
+ New-Item $Bootstrap -ItemType Directory -Force | Out-Null
+ $Architecture = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'amd64' }
+ $Zip = Join-Path $Bootstrap 'gh.zip'
+ Invoke-WebRequest "https://github.com/cli/cli/releases/download/v2.102.0/gh_2.102.0_windows_$Architecture.zip" -OutFile $Zip -UseBasicParsing
+ Expand-Archive $Zip (Join-Path $Bootstrap 'gh') -Force
+ Remove-Item $Zip
+ $Gh = Get-ChildItem (Join-Path $Bootstrap 'gh') -Filter gh.exe -Recurse | Select-Object -First 1
+ if (-not $Gh) { throw 'GitHub CLI download failed.' }
+ $env:PATH = "$($Gh.DirectoryName);$env:PATH"
+}
 $ErrorActionPreference = 'Continue'
 & gh auth status --hostname github.com 2>$null
 $AuthExit = $LASTEXITCODE
