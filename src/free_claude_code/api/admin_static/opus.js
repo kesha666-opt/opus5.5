@@ -97,8 +97,6 @@ form.addEventListener("submit", async (event) => {
     keyInput.placeholder = "Ключ сохранён — введите новый для замены";
     setStatus("ok", "Claude Code Chat Opus 5.5");
   } catch (error) {
-    keyInput.value = "";
-    updateClearButton();
     setStatus("error", "Не удалось сохранить", safeMessage(error.message, "Проверьте ключ и повторите попытку."));
   } finally {
     keyInput.disabled = false;

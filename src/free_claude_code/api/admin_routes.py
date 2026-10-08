@@ -205,7 +205,9 @@ async def _verify_opus_nvidia_key(api_key: str) -> JsonObject:
     """Verify authorization with a tiny inference request, never a public catalog."""
 
     try:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=10.0)
+        ) as client:
             response = await client.post(
                 OPUS_NVIDIA_CHAT_URL,
                 headers={
