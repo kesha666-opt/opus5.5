@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-REPOSITORY="kesha666-opt/nova-code-bridge"
+REPOSITORY="caspercbwilliambzb13-del/nova-code-bridge"
 PACKAGE="nova-code-bridge"
 ADMIN_URL="http://127.0.0.1:8182/admin"
 HEALTH_URL="http://127.0.0.1:8182/health"
