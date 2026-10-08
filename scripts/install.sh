@@ -12,6 +12,14 @@ step() { printf '\n%s\n' "$1"; }
 [ "$(uname -s)" = "Darwin" ] || fail "Эта тестовая установка предназначена для macOS."
 [ -n "${HOME:-}" ] || fail "Не определена домашняя папка пользователя."
 command -v curl >/dev/null 2>&1 || fail "Не найден curl."
+PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+command -v gh >/dev/null 2>&1 || fail "Для приватного GitHub требуется GitHub CLI (gh)."
+gh auth status --hostname github.com >/dev/null 2>&1 || gh auth login --hostname github.com --web --git-protocol https
+visibility=$(gh repo view "$REPOSITORY" --json visibility --jq .visibility)
+[ "$visibility" = "PRIVATE" ] || fail "Ожидался приватный репозиторий."
+archive_dir=$(mktemp -d)
+trap 'rm -f "$archive_dir/source.zip"; rmdir "$archive_dir"' EXIT
+gh api "repos/$REPOSITORY/zipball/main" >"$archive_dir/source.zip"
 
 step "1/4 Подготовка установщика"
 if ! command -v uv >/dev/null 2>&1; then
@@ -26,11 +34,20 @@ if [ -f "$HOME/.nova-code/.env" ]; then
   mkdir -p "$backup_dir"
   cp -p "$HOME/.nova-code/.env" "$backup_dir/env-before-install-$(date +%Y%m%d-%H%M%S)"
 fi
-uv tool install --force "$PACKAGE @ https://github.com/$REPOSITORY/archive/refs/heads/main.zip"
+for executable in fcc-server fcc-claude; do
+  if command -v "$executable" >/dev/null 2>&1; then
+    existing=$(command -v "$executable")
+    case "$(head -n 1 "$existing")" in
+      *nova-code-bridge*) ;;
+      *) fail "Команда $executable уже занята другой установкой. Для проверки с нуля используйте чистого пользователя macOS." ;;
+    esac
+  fi
+done
+uv tool install --force "$archive_dir/source.zip"
 tool_bin=$(uv tool dir --bin)
 PATH="$tool_bin:$PATH"
-command -v nova-server >/dev/null 2>&1 || fail "Команда nova-server не установилась."
-command -v nova-code >/dev/null 2>&1 || fail "Команда nova-code не установилась."
+command -v fcc-server >/dev/null 2>&1 || fail "Команда fcc-server не установилась."
+command -v fcc-claude >/dev/null 2>&1 || fail "Команда fcc-claude не установилась."
 
 step "3/4 Проверка Claude Code"
 if ! command -v claude >/dev/null 2>&1; then
@@ -42,7 +59,7 @@ command -v claude >/dev/null 2>&1 || fail "Claude Code установлен, н�
 step "4/4 Запуск панели"
 mkdir -p "$HOME/.nova-code/logs"
 if ! curl -fsS "$HEALTH_URL" >/dev/null 2>&1; then
-  nohup "$tool_bin/nova-server" >"$HOME/.nova-code/logs/launcher.log" 2>&1 &
+  nohup "$tool_bin/fcc-server" >"$HOME/.nova-code/logs/launcher.log" 2>&1 &
   server_pid=$!
   ready=0
   attempt=0
@@ -57,5 +74,5 @@ fi
 open "$ADMIN_URL"
 
 printf '\nГотово. Введите NVIDIA API-ключ в открывшейся панели.\n'
-printf 'После успешной проверки запускайте: nova-code\n'
-printf 'Удаление с резервной копией настроек: curl -fsSL https://raw.githubusercontent.com/%s/main/scripts/uninstall.sh | sh\n' "$REPOSITORY"
+printf 'После успешной проверки запускайте: fcc-claude\n'
+printf 'Удаление пакета: uv tool uninstall %s\n' "$PACKAGE"

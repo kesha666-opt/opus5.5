@@ -99,7 +99,7 @@ def test_installer_and_uninstaller_are_scoped():
     install = (ROOT / "scripts/install.sh").read_text(encoding="utf-8")
     uninstall = (ROOT / "scripts/uninstall.sh").read_text(encoding="utf-8")
     assert "nova-code-bridge" in install
-    assert "nova-server" in install and "nova-code" in install
+    assert "fcc-server" in install and "fcc-claude" in install
     assert "127.0.0.1:8182" in install
     assert "~/.fcc" not in install
     assert 'uv tool uninstall "$PACKAGE"' in uninstall

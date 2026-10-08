@@ -44,8 +44,8 @@ dependencies = [
 ]
 
 [project.scripts]
-nova-server = "free_claude_code.cli.entrypoints:serve"
-nova-code = "free_claude_code.cli.launchers.claude:launch"
+fcc-server = "free_claude_code.cli.entrypoints:serve"
+fcc-claude = "free_claude_code.cli.launchers.claude:launch"
 
 [project.optional-dependencies]
 voice_local = [

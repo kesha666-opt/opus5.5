@@ -31,7 +31,7 @@ async function verifyProvider() {
   try {
     const result = await request("/admin/api/nova/verify", { method: "POST", body: "{}" });
     if (!result.ok) throw new Error(result.message || "NVIDIA отклонила запрос.");
-    setStatus("ok", "Подключение работает", "NVIDIA выполнила проверочный запрос. Можно запускать nova-code.");
+    setStatus("ok", "Подключение работает", "NVIDIA выполнила проверочный запрос. Можно запускать fcc-claude.");
   } catch (error) {
     setStatus("error", "Проверка не пройдена", safeMessage(error.message, "Проверьте ключ и подключение к интернету."));
   }
@@ -77,7 +77,7 @@ form.addEventListener("submit", async (event) => {
       throw new Error(result.message || "Ключ не принят.");
     }
     keyInput.placeholder = "Ключ сохранён — введите новый для замены";
-    setStatus("ok", "Подключение работает", "NVIDIA выполнила проверочный запрос. Можно запускать nova-code.");
+    setStatus("ok", "Подключение работает", "NVIDIA выполнила проверочный запрос. Можно запускать fcc-claude.");
   } catch (error) {
     keyInput.value = "";
     setStatus("error", "Не удалось сохранить", safeMessage(error.message, "Проверьте ключ и повторите попытку."));

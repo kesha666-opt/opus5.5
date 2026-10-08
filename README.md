@@ -4,14 +4,14 @@
 
 ## Установка
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/caspercbwilliambzb13-del/nova-code-bridge/main/scripts/install.sh | sh
-```
+Приватная публикация ещё не выполнена. После публикации установщик скачивает
+исходники через авторизованный GitHub CLI. Загрузка без авторизации запрещена.
+Окончательная команда установки с нуля будет проверена после публикации.
 
 После зелёного статуса в панели откройте терминал и запустите:
 
 ```sh
-nova-code
+fcc-claude
 ```
 
 Панель: <http://127.0.0.1:8182/admin>
@@ -23,7 +23,7 @@ nova-code
 - Провайдер: NVIDIA NIM.
 - Модель: `nvidia/nemotron-3-super-120b-a12b` через маршрут `nvidia_nim`.
 - Локальный порт: `8182`.
-- Команды: `nova-server` и `nova-code`.
+- Команды: `fcc-server` и `fcc-claude`.
 
 Модель NVIDIA не является Claude Opus. Claude Code здесь выступает клиентским интерфейсом, а ответы генерирует выбранная модель NVIDIA. Доступность и лимиты определяет NVIDIA.
 
@@ -36,10 +36,12 @@ NVIDIA NIM.
 ## Удаление
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/caspercbwilliambzb13-del/nova-code-bridge/main/scripts/uninstall.sh | sh
+uv tool uninstall nova-code-bridge
 ```
 
-Удаление не затрагивает Claude Code или установленный FCC. Папка Nova Code переносится в резервную копию с датой.
+Эта команда удаляет пакет; настройки остаются в ~/.nova-code. Имена
+fcc-server и fcc-claude совпадают с исходным FCC: установщик останавливается
+при обнаружении другой установки с этими командами.
 
 ## Проверки без секретов
 
