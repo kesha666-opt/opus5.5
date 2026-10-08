@@ -93,7 +93,7 @@ class OpusNvidiaPayload(BaseModel):
     api_key: str = Field(min_length=1, max_length=4096)
 
 
-OPUS_NVIDIA_MODEL = "meta/llama-3.3-70b-instruct"
+OPUS_NVIDIA_MODEL = "moonshotai/kimi-k3"
 OPUS_MODEL_REF = f"nvidia_nim/{OPUS_NVIDIA_MODEL}"
 OPUS_NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 

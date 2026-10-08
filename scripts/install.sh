@@ -12,7 +12,7 @@ case "$REF" in ''|*[!A-Za-z0-9._/-]*) fail 'Недопустимая верси�
 [ -n "${HOME:-}" ] || fail 'Не определена домашняя папка.'
 PATH="$HOME/.local/bin:$PATH"
 export PATH
-for executable in fcc-server fcc-claude; do
+for executable in fcc-server fcc-claude fcc-cloud; do
   existing=$(command -v "$executable" || true)
   [ -z "$existing" ] || fail "Команда $executable уже существует ($existing). Используйте чистого пользователя или отдельный HOME/PATH."
   [ ! -e "$HOME/.local/bin/$executable" ] && [ ! -L "$HOME/.local/bin/$executable" ] || fail "Место для $executable уже занято."

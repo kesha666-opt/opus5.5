@@ -10,7 +10,7 @@ $Admin = 'http://127.0.0.1:8182/admin'
 if ([Environment]::OSVersion.Platform -ne 'Win32NT') { throw 'This installer requires Windows.' }
 if ($Ref -notmatch '^[A-Za-z0-9._/-]+$') { throw 'Invalid installation version.' }
 $env:PATH = "$Bin;$env:PATH"
-foreach ($Name in @('fcc-server','fcc-claude')) {
+foreach ($Name in @('fcc-server','fcc-claude','fcc-cloud')) {
  if ((Get-Command $Name -ErrorAction SilentlyContinue) -or (Test-Path (Join-Path $Bin "$Name.exe"))) { throw "$Name already exists. Use a clean Windows user; no existing FCC will be replaced." }
 }
 $Occupied = $false

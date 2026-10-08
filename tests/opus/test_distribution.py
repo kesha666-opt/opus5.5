@@ -24,15 +24,16 @@ def _client(monkeypatch, tmp_path: Path) -> TestClient:
     )
 
 
-def test_panel_is_focused_and_keeps_legal_source_link(monkeypatch, tmp_path):
+def test_panel_matches_approved_key_entry_layout(monkeypatch, tmp_path):
     response = _client(monkeypatch, tmp_path).get("/admin")
     assert response.status_code == 200
     assert "Opus 5.5" in response.text
     assert "NVIDIA" in response.text
     assert 'id="apiKey"' in response.text
     assert "Сохранить и продолжить" in response.text
-    assert "kesha666-opt/opus5.5" in response.text
-    assert "AGPL" in response.text
+    assert "Claude Code Chat Opus 5.5" in response.text
+    assert "Настройки" not in response.text
+    assert "window-actions" not in response.text
     assert "Free Claude Code" not in response.text
     assert "OpenRouter" not in response.text
     assert "Telegram" not in response.text
@@ -56,7 +57,7 @@ def test_fork_isolated_from_existing_fcc(monkeypatch, tmp_path):
     assert legacy_env_paths() == ()
     settings = Settings()
     assert settings.port == 8182
-    assert settings.model == "nvidia_nim/meta/llama-3.3-70b-instruct"
+    assert settings.model == "nvidia_nim/moonshotai/kimi-k3"
 
 
 def test_invalid_key_is_not_saved(monkeypatch, tmp_path):

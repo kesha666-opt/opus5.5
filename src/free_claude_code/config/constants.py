@@ -1,6 +1,6 @@
 """Shared defaults used by config models and provider adapters."""
 
-DEFAULT_MODEL = "nvidia_nim/meta/llama-3.3-70b-instruct"
+DEFAULT_MODEL = "nvidia_nim/moonshotai/kimi-k3"
 
 # Client context allocation when the provider reports no model limit.
 DEFAULT_MODEL_CONTEXT_TOKENS = 200_000

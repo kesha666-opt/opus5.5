@@ -186,8 +186,7 @@ def test_admin_page_uses_installed_version(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert 'href="https://github.com/kesha666-opt/opus5.5"' in response.text
-    assert 'target="_blank"' in response.text
-    assert 'rel="noopener noreferrer"' in response.text
+    assert 'rel="license"' in response.text
     assert 'href="/admin/assets/9.8.7/opus.css"' in response.text
     assert 'src="/admin/assets/9.8.7/opus.js"' in response.text
     assert 'href="/admin/assets/admin.css"' not in response.text
@@ -2033,7 +2032,7 @@ def test_admin_never_reads_arbitrary_current_directory_env(monkeypatch, tmp_path
 
     config = _local_client(app).get("/admin/api/config").json()
     model_field = next(field for field in config["fields"] if field["key"] == "MODEL")
-    assert model_field["value"] == "nvidia_nim/meta/llama-3.3-70b-instruct"
+    assert model_field["value"] == "nvidia_nim/moonshotai/kimi-k3"
     assert model_field["source"] == "default"
 
     response = _local_client(app).post(

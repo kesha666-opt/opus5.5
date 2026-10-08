@@ -10,7 +10,8 @@ const statusText = document.querySelector("#statusText");
 function setStatus(kind, title, text) {
   statusBox.className = `status ${kind}`;
   statusTitle.textContent = title;
-  statusText.textContent = text;
+  statusText.textContent = text || "";
+  statusText.hidden = !text;
 }
 
 function updateClearButton() {
@@ -34,10 +35,10 @@ function safeMessage(value, fallback) {
 }
 
 async function verifyProvider() {
-  setStatus("neutral", "Проверяем NVIDIA API…", "Выполняется короткий проверочный запрос.");
+  setStatus("neutral", "Claude Code Chat Opus 5.5");
   const result = await request("/admin/api/opus/verify", { method: "POST", body: "{}" });
   if (!result.ok) throw new Error(result.message || "NVIDIA отклонила запрос.");
-  setStatus("ok", "NVIDIA API подключён", "Ключ проверен. Соединение установлено.");
+  setStatus("ok", "Claude Code Chat Opus 5.5");
 }
 
 async function loadState() {
@@ -83,7 +84,7 @@ form.addEventListener("submit", async (event) => {
   }
   saveButton.disabled = true;
   keyInput.disabled = true;
-  setStatus("neutral", "Сохраняем и проверяем…", "Ключ остаётся только в локальных настройках.");
+  setStatus("neutral", "Claude Code Chat Opus 5.5");
   try {
     const result = await request("/admin/api/opus/configure", {
       method: "POST",
@@ -94,7 +95,7 @@ form.addEventListener("submit", async (event) => {
     updateClearButton();
     if (!result.ok) throw new Error(result.message || "Ключ не принят.");
     keyInput.placeholder = "Ключ сохранён — введите новый для замены";
-    setStatus("ok", "NVIDIA API подключён", "Ключ проверен. Соединение установлено.");
+    setStatus("ok", "Claude Code Chat Opus 5.5");
   } catch (error) {
     keyInput.value = "";
     updateClearButton();
