@@ -105,6 +105,8 @@ def test_installer_and_uninstaller_are_scoped():
     assert "127.0.0.1:8182" in install
     assert 'type="password"' in install
     assert "~/.fcc" not in install
+    assert "gh auth" not in install
+    assert "archive/refs/heads" in install
     assert 'uv tool uninstall "$PACKAGE"' in uninstall
     assert ".opus5.5/tools" in uninstall
     assert "mv " not in uninstall
@@ -114,6 +116,7 @@ def test_installer_and_uninstaller_are_scoped():
 def test_windows_installer_checks_the_local_panel():
     install = (ROOT / "scripts/install.ps1").read_text(encoding="utf-8")
     assert "$Panel = Invoke-WebRequest $Admin" in install
+    assert "gh auth" not in install
     assert 'type="password"' in install
 
 
