@@ -22,10 +22,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           version: '0.12.17'
-      - name: Install from private GitHub archive (Unix)
+      - name: Install from public GitHub archive (Unix)
         if: runner.os != 'Windows'
         run: sh scripts/install.sh
-      - name: Install from private GitHub archive (Windows)
+      - name: Install from public GitHub archive (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen

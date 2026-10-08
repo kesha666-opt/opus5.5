@@ -106,7 +106,7 @@ def test_installer_and_uninstaller_are_scoped():
     assert 'type="password"' in install
     assert "~/.fcc" not in install
     assert "gh auth" not in install
-    assert "archive/refs/heads" in install
+    assert "/archive/$REF.zip" in install
     assert 'uv tool uninstall "$PACKAGE"' in uninstall
     assert ".opus5.5/tools" in uninstall
     assert "mv " not in uninstall

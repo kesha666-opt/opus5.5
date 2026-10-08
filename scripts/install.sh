@@ -21,7 +21,7 @@ command -v curl >/dev/null || fail 'Требуется curl.'
 if curl -s --connect-timeout 2 "$HEALTH_URL" >/dev/null 2>&1; then fail 'Порт 8182 занят. Установка остановлена без изменения сервера.'; fi
 archive_dir=$(mktemp -d)
 trap 'rm -rf "$archive_dir"' EXIT HUP INT TERM
-curl -fsSL "https://github.com/$REPOSITORY/archive/refs/heads/$REF.zip" -o "$archive_dir/source.zip"
+curl -fsSL "https://github.com/$REPOSITORY/archive/$REF.zip" -o "$archive_dir/source.zip"
 if ! command -v uv >/dev/null; then
  curl -fsSL https://astral.sh/uv/install.sh -o "$archive_dir/uv.sh"
  UV_NO_MODIFY_PATH=1 sh "$archive_dir/uv.sh"

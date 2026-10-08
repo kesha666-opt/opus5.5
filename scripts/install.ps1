@@ -20,7 +20,7 @@ $TempDir = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
 New-Item $TempDir -ItemType Directory | Out-Null
 try {
  $Archive = Join-Path $TempDir 'source.zip'
- Invoke-WebRequest "https://github.com/$Repository/archive/refs/heads/$Ref.zip" -OutFile $Archive -UseBasicParsing
+ Invoke-WebRequest "https://github.com/$Repository/archive/$Ref.zip" -OutFile $Archive -UseBasicParsing
  if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
   Invoke-WebRequest 'https://astral.sh/uv/install.ps1' -OutFile (Join-Path $TempDir 'uv.ps1') -UseBasicParsing
   $env:UV_NO_MODIFY_PATH = '1'
