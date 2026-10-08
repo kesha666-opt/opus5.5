@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param([string]$Ref = 'main', [switch]$NoOpen)
 $ErrorActionPreference = 'Stop'
-$Repository = 'kesha666-opt/opus-5-5'
+$Repository = 'kesha666-opt/opus-5-5-bridge'
 $Root = Join-Path $env:USERPROFILE '.opus-5-5'
 $Bin = Join-Path $env:USERPROFILE '.local\bin'
 $Health = 'http://127.0.0.1:8182/health'

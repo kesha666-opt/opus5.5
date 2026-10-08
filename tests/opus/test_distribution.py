@@ -31,7 +31,7 @@ def test_panel_is_focused_and_keeps_legal_source_link(monkeypatch, tmp_path):
     assert "NVIDIA" in response.text
     assert 'id="apiKey"' in response.text
     assert "Сохранить и проверить" in response.text
-    assert "kesha666-opt/opus-5-5" in response.text
+    assert "kesha666-opt/opus-5-5-bridge" in response.text
     assert "AGPL" in response.text
     assert "Free Claude Code Admin" not in response.text
     assert "OpenRouter" not in response.text

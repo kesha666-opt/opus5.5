@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 umask 077
-REPOSITORY="kesha666-opt/opus-5-5"
+REPOSITORY="kesha666-opt/opus-5-5-bridge"
 PACKAGE="opus-5-5"
 ADMIN_URL="http://127.0.0.1:8182/admin"
 HEALTH_URL="http://127.0.0.1:8182/health"
