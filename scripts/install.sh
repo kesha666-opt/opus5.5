@@ -10,7 +10,6 @@ case "$(uname -s)" in Darwin|Linux) ;; *) fail 'Поддерживаются mac
 [ -n "${HOME:-}" ] || fail 'Не определена домашняя папка.'
 PATH="$HOME/.local/bin:$PATH"
 export PATH
-# This installer can be served by the public opus-5-5 bootstrap repository.
 # Application source remains private and is fetched only after owner login.
 bootstrap_dir=$(mktemp -d)
 trap 'rm -rf "$bootstrap_dir"' EXIT

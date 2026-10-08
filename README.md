@@ -2,27 +2,23 @@
 
 Локальный шлюз NVIDIA NIM для Claude Code. Название этой сборки — **Nova Code**. Финальный дизайн панели будет заменён отдельно; сейчас доступна рабочая форма ввода ключа.
 
-> Публикация пока не подтверждена: команды ниже заработают после создания приватного репозитория. [Фактические результаты проверок](VERIFICATION.md).
+> Исходники находятся в приватном репозитории. Для установки нужна авторизация GitHub с доступом к нему. [Фактические результаты проверок](VERIFICATION.md).
 
 ## Установка
-
-Целевой короткий запуск после публикации публичного установщика `opus-5-5`:
 
 **macOS / Linux:**
 
 ```sh
-curl -fsSL "https://raw.githubusercontent.com/kesha666-opt/opus-5-5/main/scripts/install.sh" | sh
+gh repo clone kesha666-opt/nova-code-bridge && sh nova-code-bridge/scripts/install.sh
 ```
 
-Это пока **планируемый адрес**, а не проверенная рабочая ссылка. В публичный репозиторий попадёт только установщик; исходники приложения остаются приватными в `kesha666-opt/nova-code-bridge`. Установщик сам подготовит GitHub CLI и предложит владельцу авторизацию для доступа к приватным исходникам. Публичное размещение ещё не выполнено.
-
-**Windows PowerShell — текущий приватный вариант:**
+**Windows PowerShell:**
 
 ```powershell
-gh repo clone kesha666-opt/nova-code-bridge; if (!$LASTEXITCODE) { powershell -ExecutionPolicy Bypass -File nova-code-bridge/scripts/install.ps1 }
+gh repo clone kesha666-opt/nova-code-bridge; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File nova-code-bridge/scripts/install.ps1 }
 ```
 
-Установщик сам подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели — только ключ NVIDIA, кнопка проверки и статус. После успешной проверки запустите `fcc-claude`.
+Установщик подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели — только ключ NVIDIA, кнопка проверки и статус. После успешной проверки запустите `fcc-claude`.
 
 Все служебные шаги находятся внутри двух установщиков. В Linux без графического окружения откройте панель вручную на том же компьютере. Если команды нет в PATH: `~/.local/bin/fcc-claude` на macOS/Linux или `& "$env:USERPROFILE\.local\bin\fcc-claude.exe"` на Windows.
 
