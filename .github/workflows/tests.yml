@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  focused-tests:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - name: Check Python changes
+        run: uv run ruff check src/free_claude_code/api/admin_routes.py tests/nova
+      - name: Check shell scripts
+        run: sh -n scripts/install.sh scripts/uninstall.sh
+      - name: Run focused tests
+        run: >-
+          uv run pytest -q
+          tests/nova
+          tests/providers/test_nvidia_nim.py
+          tests/providers/test_nvidia_nim_native_tool_stream.py
+      - name: Build package
+        run: uv build

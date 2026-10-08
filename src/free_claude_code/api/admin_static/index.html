@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Nova Code — подключение NVIDIA</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/admin/assets/__FCC_VERSION__/nova.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel" aria-labelledby="title">
+        <header class="brand">
+          <span class="mark" aria-hidden="true"><span></span></span>
+          <div>
+            <p class="eyebrow">Локальный AI‑шлюз</p>
+            <h1 id="title">Nova Code</h1>
+          </div>
+        </header>
+
+        <div class="intro">
+          <h2>Подключите NVIDIA</h2>
+          <p>Ключ хранится только на этом компьютере. Он не попадает в репозиторий и не показывается повторно.</p>
+        </div>
+
+        <form id="keyForm" novalidate>
+          <label for="apiKey">API‑ключ NVIDIA</label>
+          <div class="input-wrap">
+            <input id="apiKey" name="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="nvapi-…" required />
+            <button id="toggleKey" class="reveal" type="button" aria-label="Показать ключ">Показать</button>
+          </div>
+          <p class="hint">Создать ключ можно в NVIDIA Build. Вставляйте его только здесь, не в чат.</p>
+          <button id="saveButton" class="primary" type="submit">Сохранить и проверить</button>
+        </form>
+
+        <div id="status" class="status neutral" role="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div>
+            <strong id="statusTitle">Проверяем состояние…</strong>
+            <p id="statusText">Подождите несколько секунд.</p>
+          </div>
+        </div>
+
+        <div class="next" id="nextStep" hidden>
+          <span>Готово к работе</span>
+          <code>nova-code</code>
+        </div>
+
+        <footer>
+          <span>Версия __FCC_VERSION__</span>
+          <a href="https://github.com/kesha666-opt/nova-code-bridge" target="_blank" rel="noopener noreferrer">Исходный код и лицензия AGPL‑3.0</a>
+        </footer>
+      </section>
+    </main>
+    <script src="/admin/assets/__FCC_VERSION__/nova.js"></script>
+  </body>
+</html>

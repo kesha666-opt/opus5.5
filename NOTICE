@@ -1,0 +1,17 @@
+Nova Code Bridge 0.1.0
+Copyright (c) 2026 Nova Code Bridge contributors
+
+This distribution is a modified version of Free Claude Code:
+https://github.com/Alishahryar1/free-claude-code
+
+Upstream copyright:
+Copyright (c) 2026 Ali Khokhar
+
+Upstream base commit:
+9194f157af6beb663cf3e6035f9cdadb09e8917b
+
+The complete distribution, including modifications, is licensed under
+GNU Affero General Public License version 3 only. See LICENSE.
+
+Nova Code Bridge is independent and is not affiliated with or endorsed by
+NVIDIA, Anthropic, or the upstream authors.
