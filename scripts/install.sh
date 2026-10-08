@@ -10,7 +10,19 @@ case "$(uname -s)" in Darwin|Linux) ;; *) fail 'Поддерживаются mac
 [ -n "${HOME:-}" ] || fail 'Не определена домашняя папка.'
 PATH="$HOME/.local/bin:$PATH"
 export PATH
-command -v gh >/dev/null || fail 'Для приватного репозитория установите GitHub CLI: https://cli.github.com'
+# This installer can be served by the public opus-5-5 bootstrap repository.
+# Application source remains private and is fetched only after owner login.
+bootstrap_dir=$(mktemp -d)
+trap 'rm -rf "$bootstrap_dir"' EXIT
+if ! command -v gh >/dev/null; then
+ case "$(uname -s)" in Darwin) platform=macOS; extension=zip ;; Linux) platform=linux; extension=tar.gz ;; esac
+ case "$(uname -m)" in arm64|aarch64) architecture=arm64 ;; x86_64|amd64) architecture=amd64 ;; *) fail 'Неподдерживаемая архитектура.' ;; esac
+ asset="gh_2.102.0_${platform}_${architecture}"
+ curl -fsSL "https://github.com/cli/cli/releases/download/v2.102.0/$asset.$extension" -o "$bootstrap_dir/gh.$extension"
+ if [ "$extension" = zip ]; then unzip -q "$bootstrap_dir/gh.zip" -d "$bootstrap_dir"; else tar -xzf "$bootstrap_dir/gh.tar.gz" -C "$bootstrap_dir"; fi
+ PATH="$bootstrap_dir/$asset/bin:$PATH"
+ export PATH
+fi
 gh auth status --hostname github.com >/dev/null 2>&1 || gh auth login --hostname github.com --web --git-protocol https
 [ "$(gh repo view "$REPOSITORY" --json visibility --jq .visibility)" = PRIVATE ] || fail 'Ожидался приватный репозиторий.'
 # Never replace a command belonging to another installation, even a broken symlink.
@@ -22,7 +34,7 @@ done
 command -v curl >/dev/null || fail 'Требуется curl.'
 if curl -s --connect-timeout 2 "$HEALTH_URL" >/dev/null 2>&1; then fail 'Порт 8182 занят. Установка остановлена без изменения сервера.'; fi
 archive_dir=$(mktemp -d)
-trap 'rm -rf "$archive_dir"' EXIT HUP INT TERM
+trap 'rm -rf "$archive_dir" "$bootstrap_dir"' EXIT HUP INT TERM
 commit=$(gh api "repos/$REPOSITORY/commits/${NOVA_REF:-main}" --jq .sha)
 case "$commit" in ''|*[!0-9a-f]*) fail 'GitHub вернул неверный commit.' ;; esac
 [ "${#commit}" = 40 ] || fail 'GitHub вернул неверный commit.'

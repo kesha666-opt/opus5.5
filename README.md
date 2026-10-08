@@ -6,15 +6,17 @@
 
 ## Установка
 
-Для приватной сборки нужен установленный GitHub CLI (`gh`) с выполненным входом в аккаунт, имеющий доступ к репозиторию. Команды запускаются в папке, где ещё нет `nova-code-bridge`.
+Целевой короткий запуск после публикации публичного установщика `opus-5-5`:
 
 **macOS / Linux:**
 
 ```sh
-gh repo clone kesha666-opt/nova-code-bridge && sh nova-code-bridge/scripts/install.sh
+curl -fsSL "https://raw.githubusercontent.com/kesha666-opt/opus-5-5/main/scripts/install.sh" | sh
 ```
 
-**Windows PowerShell:**
+Это пока **планируемый адрес**, а не проверенная рабочая ссылка. В публичный репозиторий попадёт только установщик; исходники приложения остаются приватными в `kesha666-opt/nova-code-bridge`. Установщик сам подготовит GitHub CLI и предложит владельцу авторизацию для доступа к приватным исходникам. Публичное размещение ещё не выполнено.
+
+**Windows PowerShell — текущий приватный вариант:**
 
 ```powershell
 gh repo clone kesha666-opt/nova-code-bridge; if (!$LASTEXITCODE) { powershell -ExecutionPolicy Bypass -File nova-code-bridge/scripts/install.ps1 }
