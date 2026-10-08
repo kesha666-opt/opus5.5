@@ -66,6 +66,7 @@ while [ "$attempt" -lt 60 ]; do
  attempt=$((attempt + 1)); sleep 1
 done
 [ "$ready" = 1 ] || fail 'Сервер не запустился. Диагностика: ~/.nova-code/logs/launcher.log'
+curl -fsS "$ADMIN_URL" | grep -q 'type="password"' || fail 'Панель Nova Code не ответила ожидаемой формой.'
 printf '%s\n' "$server_pid" > "$HOME/.nova-code/server.pid"
 if [ "${NOVA_NO_OPEN:-0}" != 1 ]; then
  case "$(uname -s)" in Darwin) open "$ADMIN_URL" ;; Linux) if command -v xdg-open >/dev/null; then xdg-open "$ADMIN_URL" >/dev/null 2>&1 || true; fi ;; esac

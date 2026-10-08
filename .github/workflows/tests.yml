@@ -29,13 +29,21 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
-      - name: Verify server, panel and client
+      - name: Verify Unix server, panel and client
+        if: runner.os != 'Windows'
         shell: pwsh
         run: |
           $health = Invoke-RestMethod http://127.0.0.1:8182/health
           if ($health.service -ne 'nova-code-bridge') { throw 'Wrong server' }
           $panel = Invoke-WebRequest http://127.0.0.1:8182/admin
           if ($panel.Content -notmatch 'Nova Code' -or $panel.Content -notmatch 'type="password"') { throw 'Panel missing' }
+          $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
+          fcc-claude --version
+          if ($LASTEXITCODE -ne 0) { throw 'Client launch failed' }
+      - name: Verify Windows client
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
           fcc-claude --version
           if ($LASTEXITCODE -ne 0) { throw 'Client launch failed' }
