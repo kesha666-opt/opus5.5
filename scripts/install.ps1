@@ -9,7 +9,8 @@ $Health = 'http://127.0.0.1:8182/health'
 $Admin = 'http://127.0.0.1:8182/admin'
 if ([Environment]::OSVersion.Platform -ne 'Win32NT') { throw 'This installer requires Windows.' }
 if ($Ref -notmatch '^[A-Za-z0-9._/-]+$') { throw 'Invalid installation version.' }
-$env:PATH = "$Bin;$env:PATH"
+$OriginalPath = $env:PATH
+$env:PATH = "$Bin;$OriginalPath"
 foreach ($Name in @('fcc-server','fcc-claude','fcc-cloud')) {
  if ((Get-Command $Name -ErrorAction SilentlyContinue) -or (Test-Path (Join-Path $Bin "$Name.exe"))) { throw "$Name already exists. Use a clean Windows user; no existing FCC will be replaced." }
 }
@@ -30,6 +31,10 @@ try {
  $env:UV_TOOL_BIN_DIR = $Bin
  & uv tool install $Archive
  if ($LASTEXITCODE -ne 0) { throw "Installation failed: exit $LASTEXITCODE" }
+ $UvExecutable = (Get-Command uv).Source
+ $env:PATH = $OriginalPath
+ try { & $UvExecutable tool update-shell } finally { $env:PATH = "$Bin;$OriginalPath" }
+ if ($LASTEXITCODE -ne 0) { throw 'Could not add Opus 5.5 commands to PATH.' }
  if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
   Invoke-WebRequest 'https://claude.ai/install.ps1' -OutFile (Join-Path $TempDir 'claude.ps1') -UseBasicParsing
   & (Join-Path $TempDir 'claude.ps1')

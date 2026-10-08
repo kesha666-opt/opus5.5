@@ -10,6 +10,7 @@ fail() { printf 'Ошибка: %s\n' "$1" >&2; exit 1; }
 case "$(uname -s)" in Darwin|Linux) ;; *) fail 'Поддерживаются macOS и Linux.' ;; esac
 case "$REF" in ''|*[!A-Za-z0-9._/-]*) fail 'Недопустимая версия установки.' ;; esac
 [ -n "${HOME:-}" ] || fail 'Не определена домашняя папка.'
+ORIGINAL_PATH="$PATH"
 PATH="$HOME/.local/bin:$PATH"
 export PATH
 for executable in fcc-server fcc-claude fcc-cloud; do
@@ -29,6 +30,8 @@ fi
 export UV_TOOL_DIR="$HOME/.opus5.5/tools"
 export UV_TOOL_BIN_DIR="$HOME/.local/bin"
 uv tool install "$archive_dir/source.zip"
+uv_executable=$(command -v uv)
+PATH="$ORIGINAL_PATH" "$uv_executable" tool update-shell || fail 'Не удалось добавить команды Opus 5.5 в PATH.'
 if ! command -v claude >/dev/null; then
  curl -fsSL https://claude.ai/install.sh -o "$archive_dir/claude.sh"
  bash "$archive_dir/claude.sh"
