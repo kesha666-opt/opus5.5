@@ -40,13 +40,6 @@ jobs:
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
           fcc-claude --version
           if ($LASTEXITCODE -ne 0) { throw 'Client launch failed' }
-      - name: Verify Windows client
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
-          fcc-claude --version
-          if ($LASTEXITCODE -ne 0) { throw 'Client launch failed' }
       - name: Server startup diagnostics
         if: failure()
         shell: pwsh
