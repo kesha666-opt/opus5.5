@@ -9,13 +9,13 @@
 **macOS / Linux:**
 
 ```sh
-gh repo clone kesha666-opt/opus-5-5-bridge && sh opus-5-5-bridge/scripts/install.sh
+gh repo clone kesha666-opt/opus5.5 && sh opus5.5/scripts/install.sh
 ```
 
 **Windows PowerShell:**
 
 ```powershell
-gh repo clone kesha666-opt/opus-5-5-bridge; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File opus-5-5-bridge/scripts/install.ps1 }
+gh repo clone kesha666-opt/opus5.5; if ($LASTEXITCODE -eq 0) { powershell -ExecutionPolicy Bypass -File opus5.5/scripts/install.ps1 }
 ```
 
 Установщик подготовит зависимости, запустит сервер и откроет **http://127.0.0.1:8182/admin**. В панели вводится только ключ NVIDIA; после успешной проверки запускайте `fcc-claude`.
@@ -24,9 +24,9 @@ gh repo clone kesha666-opt/opus-5-5-bridge; if ($LASTEXITCODE -eq 0) { powershel
 
 ## Изоляция и ключ
 
-Порт `8182`, адрес `127.0.0.1`, настройки `~/.opus-5-5`, пакет в `~/.opus-5-5/tools`. Установщики **останавливаются**, если `fcc-server`/`fcc-claude` уже существуют или порт занят. Исходный FCC, `~/.fcc`, порт `8082` и глобальные uv tools не изменяются.
+Порт `8182`, адрес `127.0.0.1`, настройки `~/.opus5.5`, пакет в `~/.opus5.5/tools`. Установщики **останавливаются**, если `fcc-server`/`fcc-claude` уже существуют или порт занят. Исходный FCC, `~/.fcc`, порт `8082` и глобальные uv tools не изменяются.
 
-Проверка ключа отправляет короткий запрос генерации. Неверный ключ не сохраняется. После успеха ключ хранится только в локальном `~/.opus-5-5/.env`; API возвращает маску. Не вводите ключ в команды, GitHub или чат.
+Проверка ключа отправляет короткий запрос генерации. Неверный ключ не сохраняется. После успеха ключ хранится только в локальном `~/.opus5.5/.env`; API возвращает маску. Не вводите ключ в команды, GitHub или чат.
 
 ## Проверки
 

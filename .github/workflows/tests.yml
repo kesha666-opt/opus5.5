@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
         run: |
           $health = Invoke-RestMethod http://127.0.0.1:8182/health
-          if ($health.service -ne 'opus-5-5') { throw 'Wrong server' }
+          if ($health.service -ne 'opus5.5') { throw 'Wrong server' }
           $panel = Invoke-WebRequest http://127.0.0.1:8182/admin
           if ($panel.Content -notmatch 'Opus 5.5' -or $panel.Content -notmatch 'type="password"') { throw 'Panel missing' }
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
@@ -44,7 +44,7 @@ jobs:
         if: failure()
         shell: pwsh
         run: |
-          Get-Content (Join-Path $HOME '.opus-5-5/logs/launcher.log') -ErrorAction SilentlyContinue
-          Get-Content (Join-Path $HOME '.opus-5-5/logs/launcher-error.log') -ErrorAction SilentlyContinue
+          Get-Content (Join-Path $HOME '.opus5.5/logs/launcher.log') -ErrorAction SilentlyContinue
+          Get-Content (Join-Path $HOME '.opus5.5/logs/launcher-error.log') -ErrorAction SilentlyContinue
       - name: Focused tests
         run: uv run pytest -q -n 0 tests/opus tests/cli/test_claude_launcher.py tests/providers/test_nvidia_nim.py tests/providers/test_nvidia_nim_native_tool_stream.py

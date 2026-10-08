@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-FCC_CONFIG_DIRNAME = ".opus-5-5"
+FCC_CONFIG_DIRNAME = ".opus5.5"
 FCC_ENV_FILENAME = ".env"
 LEGACY_REPO_DIRNAME = "free-claude-code"
 LEGACY_XDG_CONFIG_DIRNAME = ".config"

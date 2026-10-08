@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 umask 077
-REPOSITORY="kesha666-opt/opus-5-5-bridge"
-PACKAGE="opus-5-5"
+REPOSITORY="kesha666-opt/opus5.5"
+PACKAGE="opus5.5"
 ADMIN_URL="http://127.0.0.1:8182/admin"
 HEALTH_URL="http://127.0.0.1:8182/health"
 fail() { printf 'Ошибка: %s\n' "$1" >&2; exit 1; }
@@ -43,7 +43,7 @@ if ! command -v uv >/dev/null; then
  UV_NO_MODIFY_PATH=1 sh "$archive_dir/uv.sh"
 fi
 # Dedicated tool environment and bin directory; no --force and no global uv tools.
-export UV_TOOL_DIR="$HOME/.opus-5-5/tools"
+export UV_TOOL_DIR="$HOME/.opus5.5/tools"
 export UV_TOOL_BIN_DIR="$HOME/.local/bin"
 uv tool install "$archive_dir/source.zip"
 if ! command -v claude >/dev/null; then
@@ -51,23 +51,23 @@ if ! command -v claude >/dev/null; then
  bash "$archive_dir/claude.sh"
 fi
 command -v claude >/dev/null || fail 'Claude Code не найден после установки.'
-mkdir -p "$HOME/.opus-5-5/logs"
-printf '%s\n' "$commit" > "$HOME/.opus-5-5/installed-commit"
+mkdir -p "$HOME/.opus5.5/logs"
+printf '%s\n' "$commit" > "$HOME/.opus5.5/installed-commit"
 # Ignore inherited FCC routing/configuration overrides in this installation.
 unset FCC_ENV_FILE NVIDIA_NIM_API_KEY
 export HOST=127.0.0.1 PORT=8182
-nohup "$HOME/.local/bin/fcc-server" > "$HOME/.opus-5-5/logs/launcher.log" 2>&1 < /dev/null &
+nohup "$HOME/.local/bin/fcc-server" > "$HOME/.opus5.5/logs/launcher.log" 2>&1 < /dev/null &
 server_pid=$!
 ready=0
 attempt=0
 while [ "$attempt" -lt 60 ]; do
- if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"service":"opus-5-5"'; then ready=1; break; fi
+ if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"service":"opus5.5"'; then ready=1; break; fi
  kill -0 "$server_pid" 2>/dev/null || break
  attempt=$((attempt + 1)); sleep 1
 done
-[ "$ready" = 1 ] || fail 'Сервер не запустился. Диагностика: ~/.opus-5-5/logs/launcher.log'
+[ "$ready" = 1 ] || fail 'Сервер не запустился. Диагностика: ~/.opus5.5/logs/launcher.log'
 curl -fsS "$ADMIN_URL" | grep -q 'type="password"' || fail 'Панель Opus 5.5 не ответила ожидаемой формой.'
-printf '%s\n' "$server_pid" > "$HOME/.opus-5-5/server.pid"
+printf '%s\n' "$server_pid" > "$HOME/.opus5.5/server.pid"
 if [ "${OPUS_NO_OPEN:-0}" != 1 ]; then
  case "$(uname -s)" in Darwin) open "$ADMIN_URL" ;; Linux) if command -v xdg-open >/dev/null; then xdg-open "$ADMIN_URL" >/dev/null 2>&1 || true; fi ;; esac
 fi

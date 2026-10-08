@@ -31,7 +31,7 @@ def test_panel_is_focused_and_keeps_legal_source_link(monkeypatch, tmp_path):
     assert "NVIDIA" in response.text
     assert 'id="apiKey"' in response.text
     assert "Сохранить и проверить" in response.text
-    assert "kesha666-opt/opus-5-5-bridge" in response.text
+    assert "kesha666-opt/opus5.5" in response.text
     assert "AGPL" in response.text
     assert "Free Claude Code Admin" not in response.text
     assert "OpenRouter" not in response.text
@@ -52,7 +52,7 @@ def test_panel_assets_are_served(monkeypatch, tmp_path):
 def test_fork_isolated_from_existing_fcc(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("USERPROFILE", str(tmp_path))
-    assert config_dir_path() == tmp_path / ".opus-5-5"
+    assert config_dir_path() == tmp_path / ".opus5.5"
     assert legacy_env_paths() == ()
     settings = Settings()
     assert settings.port == 8182
@@ -100,13 +100,13 @@ def test_verified_key_is_saved_but_never_returned(monkeypatch, tmp_path):
 def test_installer_and_uninstaller_are_scoped():
     install = (ROOT / "scripts/install.sh").read_text(encoding="utf-8")
     uninstall = (ROOT / "scripts/uninstall.sh").read_text(encoding="utf-8")
-    assert "opus-5-5" in install
+    assert "opus5.5" in install
     assert "fcc-server" in install and "fcc-claude" in install
     assert "127.0.0.1:8182" in install
     assert 'type="password"' in install
     assert "~/.fcc" not in install
     assert 'uv tool uninstall "$PACKAGE"' in uninstall
-    assert ".opus-5-5/tools" in uninstall
+    assert ".opus5.5/tools" in uninstall
     assert "mv " not in uninstall
     assert "free-claude-code" not in uninstall
 

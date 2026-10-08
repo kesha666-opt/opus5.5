@@ -3,7 +3,7 @@
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as distribution_version
 
-_DISTRIBUTION_NAME = "opus-5-5"
+_DISTRIBUTION_NAME = "opus5.5"
 _UNKNOWN_VERSION = "0+unknown"
 
 

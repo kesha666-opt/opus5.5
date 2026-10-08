@@ -2,8 +2,8 @@
 [CmdletBinding()]
 param([string]$Ref = 'main', [switch]$NoOpen)
 $ErrorActionPreference = 'Stop'
-$Repository = 'kesha666-opt/opus-5-5-bridge'
-$Root = Join-Path $env:USERPROFILE '.opus-5-5'
+$Repository = 'kesha666-opt/opus5.5'
+$Root = Join-Path $env:USERPROFILE '.opus5.5'
 $Bin = Join-Path $env:USERPROFILE '.local\bin'
 $Health = 'http://127.0.0.1:8182/health'
 $Admin = 'http://127.0.0.1:8182/admin'
@@ -65,7 +65,7 @@ try {
  $Process = Start-Process (Join-Path $Bin 'fcc-server.exe') -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $Root 'logs\launcher.log') -RedirectStandardError (Join-Path $Root 'logs\launcher-error.log')
  $Ready = $false
  for ($i = 0; $i -lt 60; $i++) {
-  try { $Result = Invoke-RestMethod $Health -TimeoutSec 2; if ($Result.service -eq 'opus-5-5') { $Ready = $true; break } } catch {}
+  try { $Result = Invoke-RestMethod $Health -TimeoutSec 2; if ($Result.service -eq 'opus5.5') { $Ready = $true; break } } catch {}
   if ($Process.HasExited) { break }; Start-Sleep 1
  }
  if (-not $Ready) { throw "Server failed to start. See $Root\logs" }
