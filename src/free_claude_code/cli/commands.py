@@ -102,19 +102,19 @@ def _opus_server_is_healthy(settings: Settings) -> bool:
 def _watch_running_opus(settings: Settings) -> bool:
     if not _opus_server_is_healthy(settings):
         return False
-    print(f"🟢 Сервер Opus 5.5: OK — {local_admin_url(settings)}")
-    print("Сервер уже запущен. Откройте второй терминал и введите fcc-opus.")
-    print("Ctrl+C закроет только это окно наблюдения; сервер продолжит работать.")
+    print(f"🟢 Opus 5.5 server: OK — {local_admin_url(settings)}")
+    print("The server is running. Open a second terminal and enter fcc-opus.")
+    print("Ctrl+C closes this status window only; the server will keep running.")
     try:
         while True:
             time.sleep(30)
             if _opus_server_is_healthy(settings):
-                print("🟢 Сервер Opus 5.5: OK", flush=True)
+                print("🟢 Opus 5.5 server: OK", flush=True)
             else:
-                print("🔴 Сервер Opus 5.5 перестал отвечать.")
+                print("🔴 Opus 5.5 server is no longer responding.")
                 return True
     except KeyboardInterrupt:
-        print("Наблюдение остановлено; сервер продолжает работать.")
+        print("Status monitoring stopped; the server is still running.")
         return True
 
 

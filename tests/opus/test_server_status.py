@@ -19,7 +19,7 @@ def test_existing_server_displays_health_without_starting_another(monkeypatch, c
     commands.serve()
 
     output = capsys.readouterr().out
-    assert "Сервер Opus 5.5: OK" in output
+    assert "Opus 5.5 server: OK" in output
     assert "fcc-opus" in output
-    assert "перестал отвечать" in output
+    assert "no longer responding" in output
     start.assert_not_called()

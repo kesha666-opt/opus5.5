@@ -5,4 +5,4 @@ PACKAGE="opus5.5"
 export UV_TOOL_DIR="$HOME/.opus5.5/tools"
 export UV_TOOL_BIN_DIR="$HOME/.local/bin"
 uv tool uninstall "$PACKAGE"
-printf 'Пакет Opus 5.5 удалён. Настройки ~/.opus5.5 сохранены.\n'
+printf 'Opus 5.5 has been removed. Settings in ~/.opus5.5 were kept.\n'

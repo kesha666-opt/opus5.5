@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -91,8 +92,9 @@ def test_supported_uv_minimum_is_consistent():
         encoding="utf-8"
     )
     windows = Path("scripts/install.ps1").read_text(encoding="utf-8")
-    assert '$PinnedUvVersion = "0.12.17"' in windows
-    assert tuple(map(int, "0.12.17".split("."))) >= tuple(
+    pin = re.search(r'^\$PinnedUvVersion = "([0-9.]+)"$', windows, re.MULTILINE)
+    assert pin is not None
+    assert tuple(map(int, pin.group(1).split("."))) >= tuple(
         map(int, UV_MINIMUM.split("."))
     )
 

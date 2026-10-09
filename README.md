@@ -1,77 +1,90 @@
 # Opus 5.5
 
-## Установить
+Run Claude Code with your NVIDIA API key on Windows, macOS, or Linux.
 
-Выберите свою систему, скопируйте **одну команду** и вставьте её в терминал. GitHub показывает кнопку копирования справа в каждом блоке.
+<p align="center">
+  <a href="#windows"><img alt="Windows 10 and 11" src="https://img.shields.io/badge/Windows%2010%20%2F%2011-Install-0078D4?logo=windows&logoColor=white"></a>
+  <a href="#macos"><img alt="macOS" src="https://img.shields.io/badge/macOS-Install-222222?logo=apple&logoColor=white"></a>
+  <a href="#linux"><img alt="Linux" src="https://img.shields.io/badge/Linux-Install-FCC624?logo=linux&logoColor=black"></a>
+</p>
 
-### Windows 10 / 11
+Choose your operating system above, then copy the single command in its section. Use the copy button at the top-right of the code block.
 
-1. Нажмите `Win + X` → **Терминал**.
-2. Вставьте команду целиком и нажмите Enter:
+## Install
+
+### Windows
+
+1. Open **Windows Terminal** or **PowerShell**.
+2. Copy this command, paste it, and press Enter:
 
 ```powershell
 irm https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install.ps1 | iex
 ```
 
-Устанавливать Git, Python или `winget` заранее не нужно: Windows-установщик сам подготовит Git Bash и остальные компоненты.
+No Python, Git, or `winget` setup is required. The installer prepares Git Bash and the required components for you.
 
-### macOS / Linux
+### macOS
 
-1. Откройте приложение **Терминал**.
-2. Вставьте команду целиком и нажмите Enter:
+1. Open **Terminal**.
+2. Copy this command, paste it, and press Enter:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install.sh | sh
 ```
 
-Установщик сам скачает нужные компоненты, запустит Opus 5.5 и откроет страницу настройки: **http://127.0.0.1:8182/admin**.
+### Linux
 
-## Введите ключ NVIDIA
+1. Open your terminal.
+2. Copy this command, paste it, and press Enter:
 
-На открывшейся странице вставьте NVIDIA API‑ключ и нажмите **«Сохранить и продолжить»**. Ключ не нужно вставлять в терминал или отправлять кому-либо.
+```sh
+curl -fsSL https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install.sh | sh
+```
 
-После успешной проверки откройте **два окна Терминала**.
+The installer starts Opus 5.5 and opens the setup page at <http://127.0.0.1:8182/admin>.
 
-В первом — сервер и зелёный статус:
+## Connect your NVIDIA API key
+
+Enter your NVIDIA API key on the setup page and select **Save and continue**. Do not paste the key into the terminal or share it in chat.
+
+After the key is verified, open two terminal windows:
+
+In the first window, start the server and keep it open:
 
 ```sh
 fcc-server
 ```
 
-Во втором — клиент, которому можно давать задания:
+In the second window, start Claude Code:
 
 ```sh
 fcc-opus
 ```
 
-Статус сервера подтверждает работу локального приложения. Зелёная лампочка в панели появляется после успешного ответа NVIDIA. Не открывайте скачанный HTML-файл — пользуйтесь адресом панели выше.
+The server's green status confirms the local service is running. The green indicator on the setup page appears after NVIDIA accepts the key. Use the setup page address above; do not open a downloaded HTML file.
 
-Claude Code работает как клиент; ответы предоставляет модель `moonshotai/kimi-k3` через NVIDIA API.
+Claude Code is the client. The configured model is `moonshotai/kimi-k3`, served through the NVIDIA API.
 
-## Скорость ответа
+## Response speed
 
-По умолчанию запрос без заданной глубины рассуждений использует быстрый режим `low`. Для сложной задачи можно запустить клиент с явной глубиной:
+Requests use the fast `low` reasoning mode by default. For a more involved task, you can select a higher effort:
 
 ```sh
 fcc-opus --effort high
 ```
 
-Время ответа зависит от нагрузки NVIDIA и объёма задачи. Режимы `high` и `max` требуют больше времени. Доступ и квоты определяет NVIDIA; установка не включает подписку на Anthropic или безлимитные запросы.
+Response time depends on NVIDIA service load and task size. The `high` and `max` modes take longer. NVIDIA controls service availability and quotas; this installer does not provide an Anthropic subscription or unlimited requests.
 
-Установщики предназначены для macOS, Linux и Windows. Самостоятельная установка терминального клиента на iPhone/iPad (iOS) не поддерживается.
+The installers support Windows, macOS, and Linux. Installing the terminal client directly on iPhone or iPad is not supported.
 
-## Если страница не открылась
+## If the setup page does not open
 
-Откройте браузер и перейдите по адресу:
+Open your browser and go to <http://127.0.0.1:8182/admin>.
 
-```text
-http://127.0.0.1:8182/admin
-```
+## Reinstall or update
 
-## Переустановка
+Run the same install command again. If the installer reports that port 8182 is in use or another installation already exists, stop the existing Opus 5.5 server and rerun the command. Do not delete files manually.
 
-Запустите ту же команду ещё раз. Если установщик сообщит, что порт занят или уже найдена другая установка, не удаляйте ничего вручную — остановите ранее запущенный Opus 5.5 и повторите команду.
+## License
 
-## Лицензия
-
-Модификация [Free Claude Code](https://github.com/Alishahryar1/free-claude-code), upstream commit `9194f157af6beb663cf3e6035f9cdadb09e8917b`, автор Ali Khokhar. [AGPL-3.0-only](LICENSE), [NOTICE](NOTICE).
+This project modifies [Free Claude Code](https://github.com/Alishahryar1/free-claude-code), upstream commit `9194f157af6beb663cf3e6035f9cdadb09e8917b`, by Ali Khokhar. Licensed under [AGPL-3.0-only](LICENSE). See [NOTICE](NOTICE).
