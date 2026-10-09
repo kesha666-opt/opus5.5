@@ -2,6 +2,8 @@
 [CmdletBinding()]
 param([string]$Ref = 'main', [switch]$NoOpen)
 $ErrorActionPreference = 'Stop'
+$PythonRequest = "3.14.7"
+$MinUvVersion = "0.12.13"
 $Repository = 'kesha666-opt/opus5.5'
 $Root = Join-Path $env:USERPROFILE '.opus5.5'
 $Bin = Join-Path $env:USERPROFILE '.local\bin'
@@ -38,7 +40,11 @@ New-Item $TempDir -ItemType Directory | Out-Null
 try {
  $Archive = Join-Path $TempDir 'source.zip'
  Invoke-WebRequest "https://github.com/$Repository/archive/$Ref.zip" -OutFile $Archive -UseBasicParsing
- if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+ $UvSupported = $false
+ if (Get-Command uv -ErrorAction SilentlyContinue) {
+  try { $UvSupported = [version]((& uv --version) -split ' ')[1] -ge [version]$MinUvVersion } catch {}
+ }
+ if (-not $UvSupported) {
   Invoke-WebRequest 'https://astral.sh/uv/install.ps1' -OutFile (Join-Path $TempDir 'uv.ps1') -UseBasicParsing
   $env:UV_NO_MODIFY_PATH = '1'
   & (Join-Path $TempDir 'uv.ps1')
@@ -56,7 +62,7 @@ try {
   catch { if ($_.Exception.Response) { $StillOccupied = $true } }
   if ($StillOccupied) { throw 'Server did not stop before update.' }
  }
- & uv tool install --reinstall $Archive
+ & uv tool install --python $PythonRequest --reinstall $Archive
  if ($LASTEXITCODE -ne 0) { throw "Installation failed: exit $LASTEXITCODE" }
  $UvExecutable = (Get-Command uv).Source
  $env:PATH = $OriginalPath
@@ -70,7 +76,7 @@ try {
  New-Item (Join-Path $Root 'logs') -ItemType Directory -Force | Out-Null
  Set-Content (Join-Path $Root 'installed-ref') $Ref
  Remove-Item Env:FCC_ENV_FILE,Env:NVIDIA_NIM_API_KEY -ErrorAction SilentlyContinue
- $env:HOST = '127.0.0.1'; $env:PORT = '8182'
+ $env:HOST = '127.0.0.1'; $env:PORT = '8182'; $env:FCC_OPEN_BROWSER = 'false'
  $Process = Start-Process (Join-Path $Bin 'fcc-server.exe') -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $Root 'logs\launcher.log') -RedirectStandardError (Join-Path $Root 'logs\launcher-error.log')
  $Ready = $false
  for ($i = 0; $i -lt 60; $i++) {

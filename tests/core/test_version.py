@@ -7,7 +7,7 @@ import free_claude_code.core.version as version_module
 
 
 def test_package_version_uses_installed_distribution_metadata() -> None:
-    assert version_module.package_version() == distribution_version("free-claude-code")
+    assert version_module.package_version() == distribution_version("opus5.5")
 
 
 def test_package_version_has_explicit_uninstalled_source_fallback(

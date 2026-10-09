@@ -125,3 +125,12 @@ def launch_capture(monkeypatch: pytest.MonkeyPatch) -> LaunchCapture:
     monkeypatch.setattr(subprocess, "run", capture.probe)
     monkeypatch.setattr(subprocess, "Popen", capture.start)
     return capture
+
+
+@pytest.fixture(autouse=True)
+def isolate_installed_server_monitor(monkeypatch):
+    # These tests own their listeners. Never attach to the user's running server.
+    # The monitor itself is exercised in tests/opus/test_server_status.py.
+    from free_claude_code.cli import commands
+
+    monkeypatch.setattr(commands, "_watch_running_opus", lambda settings: False)

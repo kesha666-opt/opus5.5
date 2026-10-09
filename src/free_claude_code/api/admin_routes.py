@@ -217,8 +217,9 @@ async def _verify_opus_nvidia_key(api_key: str) -> JsonObject:
                 json={
                     "model": OPUS_NVIDIA_MODEL,
                     "messages": [{"role": "user", "content": "Reply OK."}],
-                    "max_tokens": 2,
-                    "temperature": 0,
+                    "max_tokens": 256,
+                    "temperature": 1,
+                    "reasoning_effort": "low",
                     "stream": False,
                 },
             )
@@ -231,8 +232,13 @@ async def _verify_opus_nvidia_key(api_key: str) -> JsonObject:
             payload = response.json()
         except ValueError:
             payload = None
-        if isinstance(payload, dict) and payload.get("choices"):
-            return {"ok": True}
+        choices = payload.get("choices") if isinstance(payload, dict) else None
+        if isinstance(choices, list):
+            for choice in choices:
+                message = choice.get("message") if isinstance(choice, dict) else None
+                content = message.get("content") if isinstance(message, dict) else None
+                if isinstance(content, str) and content.strip():
+                    return {"ok": True}
         return {"ok": False, "message": "NVIDIA returned no generation result."}
     if response.status_code in {401, 403}:
         return {"ok": False, "message": "NVIDIA rejected this API key."}

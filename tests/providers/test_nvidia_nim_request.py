@@ -644,3 +644,36 @@ class TestBuildRequestBody:
         body = {"model": "test", "messages": [{"role": "user", "content": "hi"}]}
 
         assert clone_body_without_reasoning_content(body) is None
+
+
+def test_k3_removes_conflicting_extra_sampling_and_empty_reasoning_fields():
+    req = make_messages_request(
+        model="moonshotai/kimi-k3",
+        temperature=1.5,
+        extra_body={
+            "top_p": 0.2,
+            "presence_penalty": 1,
+            "frequency_penalty": 1,
+            "n": 2,
+            "reasoning_effort": "none",
+        },
+    )
+    body = build_request_body(req, NimSettings(), reasoning=ReasoningPolicy.off())
+    assert body["reasoning_effort"] == "low"
+    assert body["temperature"] == 1.0
+    assert not {
+        "top_p",
+        "presence_penalty",
+        "frequency_penalty",
+        "n",
+        "reasoning_effort",
+    }.intersection(body.get("extra_body", {}))
+    assert "top_p" not in body
+
+
+def test_k3_caps_client_output_allowance_to_nvidia_limit():
+    req = make_messages_request(model="moonshotai/kimi-k3", max_tokens=81920)
+    body = build_request_body(
+        req, NimSettings(), reasoning=ReasoningPolicy.provider_default()
+    )
+    assert body["max_tokens"] == 65536

@@ -55,5 +55,13 @@ jobs:
         run: |
           Get-Content (Join-Path $HOME '.opus5.5/logs/launcher.log') -ErrorAction SilentlyContinue
           Get-Content (Join-Path $HOME '.opus5.5/logs/launcher-error.log') -ErrorAction SilentlyContinue
-      - name: Focused tests
-        run: uv run pytest -q -n 0 tests/opus tests/cli/test_claude_launcher.py tests/providers/test_nvidia_nim.py tests/providers/test_nvidia_nim_native_tool_stream.py
+      - name: Full unit tests
+        run: uv run pytest -q -n 2 tests
+      - name: Lint and types
+        run: |
+          uv run ruff check
+          uv run ty check
+      - name: Current key panel browser tests
+        run: |
+          uv run playwright install --with-deps chromium
+          uv run pytest -q -n 0 e2e/test_opus_panel.py

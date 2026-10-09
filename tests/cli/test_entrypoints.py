@@ -38,23 +38,11 @@ def test_cli_scripts_are_registered() -> None:
     )
 
     assert pyproject["project"]["scripts"] == {
-        "_fcc-update-check": "free_claude_code.updater.check:main",
         "fcc-server": "free_claude_code.cli.entrypoints:serve",
-        "fcc-doctor": "free_claude_code.cli.entrypoints:doctor",
         "fcc-claude": "free_claude_code.cli.launchers.claude:launch",
-        "fcc-codex": "free_claude_code.cli.launchers.codex:launch",
-        "fcc-pi": "free_claude_code.cli.launchers.pi:launch",
-        "fcc-opencode": "free_claude_code.cli.launchers.opencode:launch",
-        "fcc-cline": "free_claude_code.cli.launchers.cline:launch",
-        "fcc-hermes": "free_claude_code.cli.launchers.hermes:launch",
-        "fcc-dsh": "free_claude_code.cli.launchers.dsh:launch",
-        "fcc-grok": "free_claude_code.cli.launchers.grok:launch",
-        "fcc-muse": "free_claude_code.cli.launchers.muse:launch",
-        "fcc-aider": "free_claude_code.cli.launchers.aider:launch",
+        "fcc-opus": "free_claude_code.cli.launchers.claude:launch",
     }
-    assert pyproject["project"]["gui-scripts"] == {
-        "fcc-desktop": "free_claude_code.cli.desktop_entrypoint:launch",
-    }
+    assert not pyproject["project"].get("gui-scripts")
 
 
 @pytest.mark.parametrize(
@@ -70,7 +58,7 @@ def test_fcc_server_reports_version_without_side_effects(
     with patch.object(entrypoints, "package_version", return_value="9.8.7"):
         entrypoints.serve(argv)
 
-    assert capsys.readouterr() == ("free-claude-code 9.8.7\n", "")
+    assert capsys.readouterr() == ("opus5.5 9.8.7\n", "")
 
 
 def test_version_entrypoint_does_not_import_command_runtime() -> None:
@@ -287,7 +275,7 @@ def test_serve_supervisor_restarts_when_app_requests_restart() -> None:
     from free_claude_code.cli import commands
 
     settings = _launcher_settings(port=0)
-    get_settings = MagicMock(side_effect=[settings, settings])
+    get_settings = MagicMock(side_effect=[settings, settings, settings])
     servers: list[object] = []
     restart_callbacks: list[Callable[[], None]] = []
 

@@ -6,7 +6,11 @@ from typing import Any
 from free_claude_code.config.nim import NimSettings
 from free_claude_code.core.anthropic import ReasoningReplayMode, set_if_not_none
 from free_claude_code.core.anthropic.models import MessagesRequest
-from free_claude_code.core.reasoning import ReasoningEffort, ReasoningPolicy
+from free_claude_code.core.reasoning import (
+    ReasoningControl,
+    ReasoningEffort,
+    ReasoningPolicy,
+)
 from free_claude_code.providers.openai_chat import (
     NamedEffortReasoning,
     OpenAIChatRequestPolicy,
@@ -113,7 +117,32 @@ def apply_nim_request_options(
         if not request_template_kwargs:
             extra_body.pop("chat_template_kwargs", None)
 
-    NIM_REASONING.encode(body, reasoning)
+    if body.get("model") == "moonshotai/kimi-k3":
+        # K3 always reasons and accepts only low/high/max. An omitted effort
+        # invokes NVIDIA's max default, causing unnecessary interactive latency.
+        # https://docs.api.nvidia.com/nim/reference/moonshotai-kimi-k3-infer
+        effort = {
+            ReasoningEffort.MINIMAL: "low",
+            ReasoningEffort.LOW: "low",
+            ReasoningEffort.MEDIUM: "high",
+            ReasoningEffort.HIGH: "high",
+            ReasoningEffort.XHIGH: "max",
+            ReasoningEffort.MAX: "max",
+        }.get(reasoning.effort, "low")
+        body["reasoning_effort"] = (
+            "low"
+            if reasoning.control in {ReasoningControl.OFF, ReasoningControl.PREFER_OFF}
+            else effort
+        )
+        body["max_tokens"] = min(body["max_tokens"], 65536)
+        # These sampling parameters are fixed by K3, not request controls.
+        for key in ("top_p", "presence_penalty", "frequency_penalty", "n"):
+            body.pop(key, None)
+            extra_body.pop(key, None)
+        if body.get("temperature") is not None:
+            body["temperature"] = min(body["temperature"], 1.0)
+    else:
+        NIM_REASONING.encode(body, reasoning)
 
     _set_extra(extra_body, "top_k", nim.top_k, ignore_value=-1)
     _set_extra(extra_body, "min_p", nim.min_p, ignore_value=0.0)
@@ -127,6 +156,8 @@ def apply_nim_request_options(
 
     if extra_body:
         body["extra_body"] = extra_body
+    else:
+        body.pop("extra_body", None)
 
 
 def _set_extra(

@@ -144,6 +144,8 @@ async def test_verification_uses_generation_and_does_not_echo_provider_errors():
     for status, body, expected in [
         (401, {"error": secret}, False),
         (200, {"data": []}, False),
+        (200, {"choices": [{"message": {"reasoning_content": "thinking"}}]}, False),
+        (200, {"choices": [{"message": {"content": " "}}]}, False),
         (200, {"choices": [{"message": {"content": "OK"}}]}, True),
     ]:
         post = AsyncMock(return_value=httpx.Response(status, json=body))
@@ -152,4 +154,15 @@ async def test_verification_uses_generation_and_does_not_echo_provider_errors():
         assert result["ok"] is expected
         assert secret not in str(result)
         assert post.call_args.args[0].endswith("/chat/completions")
-        assert post.call_args.kwargs["json"]["max_tokens"] == 2
+        assert post.call_args.kwargs["json"]["max_tokens"] == 256
+        assert post.call_args.kwargs["json"]["reasoning_effort"] == "low"
+
+
+@pytest.mark.parametrize("bad_key", ["x" * 4097, {"api_key": "synthetic-secret-value"}])
+def test_key_validation_errors_never_echo_input(monkeypatch, tmp_path, bad_key):
+    client = _client(monkeypatch, tmp_path)
+    response = client.post("/admin/api/opus/configure", json={"api_key": bad_key})
+    assert response.status_code == 422
+    assert "synthetic-secret-value" not in response.text
+    assert "x" * 100 not in response.text
+    assert response.headers["cache-control"] == "no-store"

@@ -83,3 +83,56 @@ async def test_unsupported_named_effort_is_not_silently_remapped(wire, policy):
             await _saved_reply(stream(_alias_request(wire), reasoning=policy), wire)
 
     assert len(bodies) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("wire", ["messages", "responses"])
+@pytest.mark.parametrize(
+    "policy,expected",
+    [
+        (ReasoningPolicy.provider_default(), "low"),
+        (ReasoningPolicy.on(), "low"),
+        (ReasoningPolicy.off(), "low"),
+        (ReasoningPolicy.prefer_off(), "low"),
+        (ReasoningPolicy(effort=ReasoningEffort.MINIMAL), "low"),
+        (ReasoningPolicy(effort=ReasoningEffort.LOW), "low"),
+        (ReasoningPolicy(effort=ReasoningEffort.MEDIUM), "high"),
+        (ReasoningPolicy(effort=ReasoningEffort.HIGH), "high"),
+        (ReasoningPolicy(effort=ReasoningEffort.XHIGH), "max"),
+        (ReasoningPolicy(effort=ReasoningEffort.MAX), "max"),
+    ],
+)
+async def test_k3_uses_supported_effort_and_streams_text(wire, policy, expected):
+    def responder(bodies):
+        body = bodies[-1]
+        assert body["reasoning_effort"] == expected
+        assert "top_p" not in body
+        assert "presence_penalty" not in body
+        assert "frequency_penalty" not in body
+        return 200, [
+            {
+                "id": "k3-response",
+                "object": "chat.completion.chunk",
+                "model": "moonshotai/kimi-k3",
+                "choices": [
+                    {"index": 0, "delta": {"content": "Hello"}, "finish_reason": "stop"}
+                ],
+            }
+        ]
+
+    async with _harness("chat", responder, chat_provider_factory=_alias_provider) as (
+        _,
+        bodies,
+        provider,
+    ):
+        request = _alias_request(wire).model_copy(
+            update={"model": "moonshotai/kimi-k3"}
+        )
+        stream = (
+            provider.stream_messages
+            if wire == "messages"
+            else provider.stream_responses
+        )
+        reply = await _saved_reply(stream(request, reasoning=policy), wire)
+    assert reply
+    assert len(bodies) == 1

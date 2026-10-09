@@ -84,6 +84,14 @@ def create_app(services: ApiServices) -> FastAPI:
             body = {"_json_error": type(error).__name__}
 
         message_summary, tool_names = summarize_request_validation_body(body)
+        if request.url.path == "/admin/api/opus/configure":
+            # FastAPI's default 422 includes rejected input, which may be a key.
+            return JSONResponse(
+                status_code=422,
+                content={
+                    "detail": "Введите ключ NVIDIA строкой длиной до 4096 символов."
+                },
+            )
         trace_event(
             stage="ingress",
             event="server.request.validation_failed",

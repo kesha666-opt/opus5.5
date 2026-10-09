@@ -1,0 +1,15 @@
+name: Предложение
+description: Предложение
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: "Не прикладывайте API-ключи, пароли, содержимое .env или полные журналы."
+  - type: textarea
+    id: description
+    attributes:
+      label: Описание
+      description: "Укажите систему, команду и сообщение об ошибке без личных данных."
+    validations:
+      required: true

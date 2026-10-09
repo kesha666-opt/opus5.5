@@ -208,12 +208,12 @@ def test_browser_warning_retains_owning_instance_after_server_exit(
 @pytest.mark.parametrize(
     ("occupant", "expected"),
     [
-        ("running", "FCC is already running on port 8082. Use it at http://"),
-        ("stopping", "The FCC instance on port 8082 is still stopping."),
-        ("other", "port 8082 is already in use by another program"),
-        ("not_found", "port 8082 is already in use by another program"),
-        ("forbidden", "port 8082 is already in use. If FCC is not already running"),
-        ("unreachable", "port 8082 is already in use. If FCC is not already running"),
+        ("running", "FCC is already running on port 8182. Use it at http://"),
+        ("stopping", "The FCC instance on port 8182 is still stopping."),
+        ("other", "port 8182 is already in use by another program"),
+        ("not_found", "port 8182 is already in use by another program"),
+        ("forbidden", "port 8182 is already in use. If FCC is not already running"),
+        ("unreachable", "port 8182 is already in use. If FCC is not already running"),
     ],
 )
 def test_terminal_serve_explains_busy_port(monkeypatch, caplog, occupant, expected):
