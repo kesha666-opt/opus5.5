@@ -41,15 +41,17 @@ jobs:
           & $env:CLAUDE_CODE_GIT_BASH_PATH --version
           if ($LASTEXITCODE -ne 0) { throw 'Git Bash did not start' }
           & $installer -Ref $env:GITHUB_SHA -NoOpen
-      - name: Preserve Windows subprocess environment
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
           $windowsRoot = [Environment]::GetFolderPath('Windows')
+          $env:SystemRoot = $windowsRoot
+          $env:ComSpec = Join-Path $windowsRoot 'System32\cmd.exe'
           "SystemRoot=$windowsRoot" >> $env:GITHUB_ENV
           "ComSpec=$(Join-Path $windowsRoot 'System32\cmd.exe')" >> $env:GITHUB_ENV
           Join-Path $HOME '.local\bin' >> $env:GITHUB_PATH
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
+          $health = Invoke-RestMethod http://127.0.0.1:8182/health
+          if ($health.service -ne 'opus5.5') { throw 'Wrong Windows server' }
+          $panel = Invoke-WebRequest http://127.0.0.1:8182/admin
+          if ($panel.Content -notmatch 'Opus 5.5' -or $panel.Content -notmatch 'type="password"') { throw 'Windows panel missing' }
           fcc-opus --version
           if ($LASTEXITCODE -ne 0) { throw 'Windows client alias failed' }
       - name: Verify Unix server, panel and client

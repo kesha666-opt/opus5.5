@@ -90,8 +90,10 @@ def test_supported_uv_minimum_is_consistent():
     assert f'MIN_UV_VERSION="{UV_MINIMUM}"' in Path("scripts/install.sh").read_text(
         encoding="utf-8"
     )
-    assert f'$MinUvVersion = "{UV_MINIMUM}"' in Path("scripts/install.ps1").read_text(
-        encoding="utf-8"
+    windows = Path("scripts/install.ps1").read_text(encoding="utf-8")
+    assert '$PinnedUvVersion = "0.12.17"' in windows
+    assert tuple(map(int, "0.12.17".split("."))) >= tuple(
+        map(int, UV_MINIMUM.split("."))
     )
 
 
