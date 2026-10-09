@@ -1,7 +1,7 @@
 """Loguru-based structured logging configuration.
 
 Structured logs are written as JSON lines to a configurable path (default
-``~/.fcc/logs/server.log``). Stdlib logging is intercepted and funneled to loguru.
+``~/.opus5.5/logs/server.log``). Stdlib logging is intercepted and funneled to loguru.
 Loguru's JSON stores exception metadata in ``record.exception`` and context in
 ``record.extra``. Structured traces live in ``record.extra.trace_payload``.
 """
@@ -71,6 +71,8 @@ def _add_file_sink(log_file: str | Path, level: str) -> int:
         log_path,
         level=level,
         serialize=True,
+        # Tracebacks must never dump request locals, which can contain API keys.
+        diagnose=False,
         encoding="utf-8",
         mode="a",
         rotation="50 MB",

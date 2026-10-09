@@ -342,3 +342,26 @@ def test_configure_logging_updates_verbosity_on_same_level(tmp_path) -> None:
     logger.info("still logging")
     logger.complete()
     assert "still logging" in Path(log_file).read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("stdlib", [False, True])
+def test_exception_traceback_does_not_dump_credential_locals(tmp_path, stdlib):
+    log_file = tmp_path / "private-exception.log"
+    configure_logging(log_file, force=True)
+    credential = "synthetic-credential-" + "never-log-this"
+
+    def fail(value):
+        raise RuntimeError("request rejected")
+
+    try:
+        fail(credential)
+    except RuntimeError:
+        if stdlib:
+            logging.getLogger("test.secret").exception("request failed")
+        else:
+            logger.exception("request failed")
+    logger.complete()
+    text = log_file.read_text()
+    assert credential not in text
+    assert "RuntimeError" in text
+    assert "request failed" in text
