@@ -33,7 +33,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Set-ExecutionPolicy -Scope Process -ExecutionPolicy AllSigned -Force
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
           if (Get-Command uv -ErrorAction SilentlyContinue) { throw 'Windows bootstrap test unexpectedly found uv preinstalled' }
           $installer = [scriptblock]::Create([IO.File]::ReadAllText((Resolve-Path './scripts/install.ps1')))
           & $installer -Ref $env:GITHUB_SHA -NoOpen -ForceGitBashBootstrap
