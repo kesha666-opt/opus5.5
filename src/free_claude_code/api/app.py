@@ -89,7 +89,7 @@ def create_app(services: ApiServices) -> FastAPI:
             return JSONResponse(
                 status_code=422,
                 content={
-                    "detail": "Введите ключ NVIDIA строкой длиной до 4096 символов."
+                    "detail": "Enter your NVIDIA API key as text, up to 4096 characters."
                 },
             )
         trace_event(

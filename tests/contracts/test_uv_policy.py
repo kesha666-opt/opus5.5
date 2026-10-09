@@ -70,28 +70,35 @@ def test_ci_python_identity_parses_toml(
 
 
 def test_installer_python_requests_match_package_requirement():
-    project = tomllib.loads(Path("pyproject.toml").read_text())
+    project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
     version = project["project"]["requires-python"].removeprefix("==")
-    shell = Path("scripts/install.sh").read_text()
-    windows = Path("scripts/install.ps1").read_text()
+    shell = Path("scripts/install.sh").read_text(encoding="utf-8")
+    windows = Path("scripts/install.ps1").read_text(encoding="utf-8")
     assert f'PYTHON_VERSION="{version}"' in shell
     assert f'$PythonRequest = "{version}"' in windows
     assert '--python "$PYTHON_VERSION"' in shell
     assert "--python $PythonRequest" in windows
     assert (
-        tomllib.loads(Path("uv.lock").read_text())["requires-python"] == f"=={version}"
+        tomllib.loads(Path("uv.lock").read_text(encoding="utf-8"))["requires-python"]
+        == f"=={version}"
     )
 
 
 def test_supported_uv_minimum_is_consistent():
-    project = tomllib.loads(Path("pyproject.toml").read_text())
+    project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
     assert project["tool"]["uv"]["required-version"] == f">={UV_MINIMUM}"
-    assert f'MIN_UV_VERSION="{UV_MINIMUM}"' in Path("scripts/install.sh").read_text()
-    assert f'$MinUvVersion = "{UV_MINIMUM}"' in Path("scripts/install.ps1").read_text()
+    assert f'MIN_UV_VERSION="{UV_MINIMUM}"' in Path("scripts/install.sh").read_text(
+        encoding="utf-8"
+    )
+    assert f'$MinUvVersion = "{UV_MINIMUM}"' in Path("scripts/install.ps1").read_text(
+        encoding="utf-8"
+    )
 
 
 def test_clean_install_covers_supported_platforms():
-    workflow = yaml.safe_load(Path(".github/workflows/tests.yml").read_text())
+    workflow = yaml.safe_load(
+        Path(".github/workflows/tests.yml").read_text(encoding="utf-8")
+    )
     job = workflow["jobs"]["clean-install"]
     assert set(job["strategy"]["matrix"]["os"]) == set(REQUIRED_TEST_RUNNERS.values())
     assert job["strategy"]["fail-fast"] is False
@@ -99,7 +106,7 @@ def test_clean_install_covers_supported_platforms():
 
 
 def test_ci_runs_complete_unit_and_current_panel_suites():
-    workflow = Path(".github/workflows/tests.yml").read_text()
+    workflow = Path(".github/workflows/tests.yml").read_text(encoding="utf-8")
     assert "uv run pytest -q -n 2 tests" in workflow
     assert "e2e/test_opus_panel.py" in workflow
     assert "ruff check" in workflow

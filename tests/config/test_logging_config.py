@@ -361,7 +361,7 @@ def test_exception_traceback_does_not_dump_credential_locals(tmp_path, stdlib):
         else:
             logger.exception("request failed")
     logger.complete()
-    text = log_file.read_text()
+    text = log_file.read_text(encoding="utf-8")
     assert credential not in text
     assert "RuntimeError" in text
     assert "request failed" in text

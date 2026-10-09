@@ -36,7 +36,7 @@ def panel(page: Page, *, configured=False, failure=None):
         else:
             request.fulfill(
                 body=(STATIC / "index.html")
-                .read_text()
+                .read_text(encoding="utf-8")
                 .replace("__FCC_VERSION__", "test"),
                 content_type="text/html",
             )
@@ -49,7 +49,7 @@ def panel(page: Page, *, configured=False, failure=None):
 
 def test_load_never_spends_a_provider_request(page):
     calls = panel(page, configured=True)
-    expect(page.locator("#statusText")).to_contain_text("Ключ сохранён")
+    expect(page.locator("#statusText")).to_contain_text("Key saved")
     assert calls == []
     page.locator("#saveButton").click()
     expect(page.locator("#status")).to_have_class("status ok")
@@ -68,7 +68,7 @@ def test_success_masks_and_clears_key_without_url_leak(page):
     expect(page.locator("#status")).to_have_class("status ok")
     expect(page.locator("#apiKey")).to_have_value("")
     expect(page.locator("#apiKey")).to_have_attribute("type", "password")
-    expect(page.locator("#toggleKey")).to_have_attribute("aria-label", "Показать ключ")
+    expect(page.locator("#toggleKey")).to_have_attribute("aria-label", "Show key")
     assert len(calls) == 1 and calls[0].method == "POST"
     assert json.loads(calls[0].post_data) == {"api_key": secret}
     assert page.url == URL
@@ -101,7 +101,8 @@ def test_no_script_cannot_submit_key_in_url(browser):
         page.route(
             "**/*",
             lambda route: route.fulfill(
-                body=(STATIC / "index.html").read_text(), content_type="text/html"
+                body=(STATIC / "index.html").read_text(encoding="utf-8"),
+                content_type="text/html",
             ),
         )
         page.goto(URL)

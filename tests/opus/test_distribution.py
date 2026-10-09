@@ -30,9 +30,11 @@ def test_panel_matches_approved_key_entry_layout(monkeypatch, tmp_path):
     assert "Opus 5.5" in response.text
     assert "NVIDIA" in response.text
     assert 'id="apiKey"' in response.text
-    assert "Сохранить и продолжить" in response.text
+    assert "Save and continue" in response.text
     assert "Claude Code Chat Opus 5.5" in response.text
-    assert "Настройки" not in response.text
+    assert "Settings" not in response.text
+    assert 'lang="en"' in response.text
+    assert not re.search(r"[\u0400-\u04ff]", response.text)
     assert "window-actions" not in response.text
     assert "Free Claude Code" not in response.text
     assert "OpenRouter" not in response.text
