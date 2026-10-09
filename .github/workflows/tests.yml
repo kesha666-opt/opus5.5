@@ -37,6 +37,13 @@ jobs:
           & $env:CLAUDE_CODE_GIT_BASH_PATH --version
           if ($LASTEXITCODE -ne 0) { throw 'Git Bash did not start' }
           ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
+      - name: Preserve Windows subprocess environment
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $windowsRoot = [Environment]::GetFolderPath('Windows')
+          "SystemRoot=$windowsRoot" >> $env:GITHUB_ENV
+          "ComSpec=$(Join-Path $windowsRoot 'System32\cmd.exe')" >> $env:GITHUB_ENV
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
           fcc-opus --version
           if ($LASTEXITCODE -ne 0) { throw 'Windows client alias failed' }
