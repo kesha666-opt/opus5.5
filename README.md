@@ -13,6 +13,8 @@
 irm https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install.ps1 | iex
 ```
 
+Устанавливать Git, Python или `winget` заранее не нужно: Windows-установщик сам подготовит Git Bash и остальные компоненты.
+
 ### macOS / Linux
 
 1. Откройте приложение **Терминал**.

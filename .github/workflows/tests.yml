@@ -2,6 +2,7 @@ name: Opus 5.5 verification
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,7 +32,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
+          ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen -ForceGitBashBootstrap
+          if (-not (Test-Path $env:CLAUDE_CODE_GIT_BASH_PATH)) { throw 'Git Bash bootstrap failed' }
+          & $env:CLAUDE_CODE_GIT_BASH_PATH --version
+          if ($LASTEXITCODE -ne 0) { throw 'Git Bash did not start' }
           ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
           fcc-opus --version

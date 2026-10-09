@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 [CmdletBinding()]
-param([string]$Ref = 'main', [switch]$NoOpen)
+param([string]$Ref = 'main', [switch]$NoOpen, [switch]$ForceGitBashBootstrap)
 $ErrorActionPreference = 'Stop'
 $PythonRequest = "3.14.7"
 $MinUvVersion = "0.12.13"
@@ -40,6 +40,36 @@ New-Item $TempDir -ItemType Directory | Out-Null
 try {
  $Archive = Join-Path $TempDir 'source.zip'
  Invoke-WebRequest "https://github.com/$Repository/archive/$Ref.zip" -OutFile $Archive -UseBasicParsing
+ # Claude Code's native Windows build requires Git Bash. Bootstrap it so a clean
+ # Windows account does not need winget or a separate manual Git installation.
+ $GitBashPath = $null
+ if (-not $ForceGitBashBootstrap) { $GitBashPath = $env:CLAUDE_CODE_GIT_BASH_PATH }
+ if (-not $ForceGitBashBootstrap -and (-not $GitBashPath -or -not (Test-Path $GitBashPath))) {
+  $GitBashPath = @(
+   (Join-Path $env:ProgramFiles 'Git\bin\bash.exe'),
+   (Join-Path $env:LOCALAPPDATA 'Programs\Git\bin\bash.exe'),
+   (Join-Path ${env:ProgramFiles(x86)} 'Git\bin\bash.exe')
+  ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+ }
+ if ($ForceGitBashBootstrap -or -not $GitBashPath) {
+  $GitRoot = Join-Path $env:LOCALAPPDATA 'Programs\Git'
+  $GitInstaller = Join-Path $TempDir 'Git-64-bit.exe'
+  $GitRelease = Invoke-RestMethod 'https://api.github.com/repos/git-for-windows/git/releases/latest'
+  $GitAsset = $GitRelease.assets | Where-Object { $_.name -match '^Git-[0-9][0-9.]*-64-bit\.exe$' } | Select-Object -First 1
+  if (-not $GitAsset -or $GitAsset.digest -notmatch '^sha256:[0-9a-f]{64}$') { throw 'Could not verify the latest Git for Windows release metadata.' }
+  Invoke-WebRequest $GitAsset.browser_download_url -OutFile $GitInstaller -UseBasicParsing
+  $GitHash = (Get-FileHash $GitInstaller -Algorithm SHA256).Hash.ToLowerInvariant()
+  if ($GitHash -ne $GitAsset.digest.Substring(7)) { throw 'Git for Windows installer checksum is invalid.' }
+  $GitSignature = Get-AuthenticodeSignature $GitInstaller
+  if ($GitSignature.Status -ne 'Valid') { throw 'Git for Windows installer signature is invalid.' }
+  $GitArgs = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-','/CURRENTUSER',"/DIR=`"$GitRoot`"")
+  $GitProcess = Start-Process -FilePath $GitInstaller -ArgumentList $GitArgs -Wait -PassThru -WindowStyle Hidden
+  if ($GitProcess.ExitCode -ne 0) { throw "Git for Windows installation failed: exit $($GitProcess.ExitCode)" }
+  $GitBashPath = Join-Path $GitRoot 'bin\bash.exe'
+ }
+ if (-not (Test-Path $GitBashPath)) { throw 'Git Bash was not found after installation.' }
+ $env:CLAUDE_CODE_GIT_BASH_PATH = $GitBashPath
+ [Environment]::SetEnvironmentVariable('CLAUDE_CODE_GIT_BASH_PATH', $GitBashPath, 'User')
  $UvSupported = $false
  if (Get-Command uv -ErrorAction SilentlyContinue) {
   try { $UvSupported = [version]((& uv --version) -split ' ')[1] -ge [version]$MinUvVersion } catch {}
