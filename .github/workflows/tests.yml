@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
+        if: runner.os != 'Windows'
         with:
           version: '0.12.17'
       - name: Install from public GitHub archive (Unix)
@@ -32,11 +33,14 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen -ForceGitBashBootstrap
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy AllSigned -Force
+          if (Get-Command uv -ErrorAction SilentlyContinue) { throw 'Windows bootstrap test unexpectedly found uv preinstalled' }
+          $installer = [scriptblock]::Create([IO.File]::ReadAllText((Resolve-Path './scripts/install.ps1')))
+          & $installer -Ref $env:GITHUB_SHA -NoOpen -ForceGitBashBootstrap
           if (-not (Test-Path $env:CLAUDE_CODE_GIT_BASH_PATH)) { throw 'Git Bash bootstrap failed' }
           & $env:CLAUDE_CODE_GIT_BASH_PATH --version
           if ($LASTEXITCODE -ne 0) { throw 'Git Bash did not start' }
-          ./scripts/install.ps1 -Ref $env:GITHUB_SHA -NoOpen
+          & $installer -Ref $env:GITHUB_SHA -NoOpen
       - name: Preserve Windows subprocess environment
         if: runner.os == 'Windows'
         shell: pwsh
@@ -44,6 +48,7 @@ jobs:
           $windowsRoot = [Environment]::GetFolderPath('Windows')
           "SystemRoot=$windowsRoot" >> $env:GITHUB_ENV
           "ComSpec=$(Join-Path $windowsRoot 'System32\cmd.exe')" >> $env:GITHUB_ENV
+          Join-Path $HOME '.local\bin' >> $env:GITHUB_PATH
           $env:PATH = "$(Join-Path $HOME '.local/bin')$([IO.Path]::PathSeparator)$env:PATH"
           fcc-opus --version
           if ($LASTEXITCODE -ne 0) { throw 'Windows client alias failed' }

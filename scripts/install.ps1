@@ -3,7 +3,7 @@
 param([string]$Ref = 'main', [switch]$NoOpen, [switch]$ForceGitBashBootstrap)
 $ErrorActionPreference = 'Stop'
 $PythonRequest = "3.14.7"
-$MinUvVersion = "0.12.13"
+$PinnedUvVersion = "0.12.17"
 $Repository = 'kesha666-opt/opus5.5'
 $Root = Join-Path $env:USERPROFILE '.opus5.5'
 $Bin = Join-Path $env:USERPROFILE '.local\bin'
@@ -72,13 +72,15 @@ try {
  [Environment]::SetEnvironmentVariable('CLAUDE_CODE_GIT_BASH_PATH', $GitBashPath, 'User')
  $UvSupported = $false
  if (Get-Command uv -ErrorAction SilentlyContinue) {
-  try { $UvSupported = [version]((& uv --version) -split ' ')[1] -ge [version]$MinUvVersion } catch {}
+  try { $UvSupported = [version]((& uv --version) -split ' ')[1] -eq [version]$PinnedUvVersion } catch {}
  }
  if (-not $UvSupported) {
-  Invoke-WebRequest 'https://astral.sh/uv/install.ps1' -OutFile (Join-Path $TempDir 'uv.ps1') -UseBasicParsing
+  $UvInstaller = Join-Path $TempDir 'uv.ps1'
+  Invoke-WebRequest "https://releases.astral.sh/github/uv/releases/download/$PinnedUvVersion/uv-installer.ps1" -OutFile $UvInstaller -UseBasicParsing
   $env:UV_NO_MODIFY_PATH = '1'
-  & (Join-Path $TempDir 'uv.ps1')
+  & ([scriptblock]::Create([IO.File]::ReadAllText($UvInstaller)))
  }
+ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { throw 'uv was not found after installation.' }
  $env:UV_TOOL_DIR = Join-Path $Root 'tools'
  $env:UV_TOOL_BIN_DIR = $Bin
  if ($Occupied) {
@@ -99,8 +101,9 @@ try {
  try { & $UvExecutable tool update-shell } finally { $env:PATH = "$Bin;$OriginalPath" }
  if ($LASTEXITCODE -ne 0) { throw 'Could not add Opus 5.5 commands to PATH.' }
  if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
-  Invoke-WebRequest 'https://claude.ai/install.ps1' -OutFile (Join-Path $TempDir 'claude.ps1') -UseBasicParsing
-  & (Join-Path $TempDir 'claude.ps1')
+  $ClaudeInstaller = Join-Path $TempDir 'claude.ps1'
+  Invoke-WebRequest 'https://claude.ai/install.ps1' -OutFile $ClaudeInstaller -UseBasicParsing
+  & ([scriptblock]::Create([IO.File]::ReadAllText($ClaudeInstaller)))
  }
  if (-not (Get-Command claude -ErrorAction SilentlyContinue)) { throw 'Claude Code not found after installation.' }
  New-Item (Join-Path $Root 'logs') -ItemType Directory -Force | Out-Null
