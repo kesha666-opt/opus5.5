@@ -75,10 +75,18 @@ try {
   try { $UvSupported = [version]((& uv --version) -split ' ')[1] -eq [version]$PinnedUvVersion } catch {}
  }
  if (-not $UvSupported) {
-  $UvInstaller = Join-Path $TempDir 'uv.ps1'
-  Invoke-WebRequest "https://releases.astral.sh/github/uv/releases/download/$PinnedUvVersion/uv-installer.ps1" -OutFile $UvInstaller -UseBasicParsing
-  $env:UV_NO_MODIFY_PATH = '1'
-  & ([scriptblock]::Create([IO.File]::ReadAllText($UvInstaller)))
+  $UvArchive = Join-Path $TempDir 'uv-windows.zip'
+  $UvArchiveSha256 = 'a252121d5b59398fcb137c6ea448176459a44010f33f67e0072305a637119ca7'
+  Invoke-WebRequest "https://github.com/astral-sh/uv/releases/download/$PinnedUvVersion/uv-x86_64-pc-windows-msvc.zip" -OutFile $UvArchive -UseBasicParsing
+  if ((Get-FileHash $UvArchive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $UvArchiveSha256) { throw 'uv archive checksum is invalid.' }
+  $UvExtract = Join-Path $TempDir 'uv'
+  Expand-Archive -Path $UvArchive -DestinationPath $UvExtract -Force
+  $UvBinary = Get-ChildItem $UvExtract -Filter 'uv.exe' -File -Recurse | Select-Object -First 1
+  if (-not $UvBinary) { throw 'uv.exe was not found in the verified archive.' }
+  New-Item $Bin -ItemType Directory -Force | Out-Null
+  Copy-Item $UvBinary.FullName (Join-Path $Bin 'uv.exe') -Force
+  $UvxBinary = Get-ChildItem $UvExtract -Filter 'uvx.exe' -File -Recurse | Select-Object -First 1
+  if ($UvxBinary) { Copy-Item $UvxBinary.FullName (Join-Path $Bin 'uvx.exe') -Force }
  }
  if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { throw 'uv was not found after installation.' }
  $env:UV_TOOL_DIR = Join-Path $Root 'tools'
