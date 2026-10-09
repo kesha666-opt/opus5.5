@@ -20,7 +20,7 @@ jobs:
       OPUS_NO_OPEN: '1'
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         if: runner.os != 'Windows'
         with:
           version: '0.12.17'
