@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-FCC_CONFIG_DIRNAME = ".fcc"
+FCC_CONFIG_DIRNAME = ".opus5.5"
 FCC_ENV_FILENAME = ".env"
 LEGACY_REPO_DIRNAME = "free-claude-code"
 LEGACY_XDG_CONFIG_DIRNAME = ".config"
@@ -62,13 +62,9 @@ def code_lock_path() -> Path:
 
 
 def legacy_env_paths() -> tuple[Path, ...]:
-    """Return legacy user env paths that can be migrated to ~/.fcc/.env."""
+    """Do not import configuration from an existing FCC installation."""
 
-    home = Path.home()
-    return (
-        home / LEGACY_REPO_DIRNAME / FCC_ENV_FILENAME,
-        home / LEGACY_XDG_CONFIG_DIRNAME / LEGACY_REPO_DIRNAME / FCC_ENV_FILENAME,
-    )
+    return ()
 
 
 def messaging_state_dir_path() -> Path:

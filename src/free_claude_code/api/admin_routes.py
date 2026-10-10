@@ -47,6 +47,8 @@ _ADMIN_ASSET_MEDIA_TYPES = {
 }
 _ADMIN_ASSET_FILENAMES = frozenset(
     {
+        "opus.css",
+        "opus.js",
         "admin.css",
         "admin.js",
         "form_controls.js",
@@ -83,6 +85,12 @@ class ConnectedAccountLoginPayload(BaseModel):
     """Interactive connected-account login selection."""
 
     mode: ConnectedAccountLoginMode | None = None
+
+
+class OpusNvidiaPayload(BaseModel):
+    """NVIDIA key submitted from the local setup page."""
+
+    api_key: str = Field(min_length=1, max_length=4096)
 
 
 def _asset_path(filename: str) -> Path:
@@ -186,6 +194,24 @@ async def test_provider(
 ):
     require_loopback_admin(request)
     return await services.admin.test_provider(provider_id)
+
+
+@router.post("/admin/api/opus/configure")
+async def configure_opus_nvidia(
+    payload: OpusNvidiaPayload,
+    request: Request,
+    services: ApiServices = Depends(get_services),
+):
+    """Save a local NVIDIA key without issuing an inference request."""
+
+    require_loopback_admin(request)
+    api_key = payload.api_key.strip()
+    if not api_key:
+        return {"ok": False, "message": "Enter an NVIDIA API key."}
+    result = await services.admin.apply_admin_config({"NVIDIA_NIM_API_KEY": api_key})
+    if not result.get("applied"):
+        return {"ok": False, "message": "The key could not be saved."}
+    return {"ok": True}
 
 
 @router.get("/admin/api/providers/{provider_id}/auth")

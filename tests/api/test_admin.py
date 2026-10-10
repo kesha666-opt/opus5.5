@@ -49,14 +49,26 @@ def test_retired_chat_urls_are_not_served(path):
     assert client.get(path).status_code == 404
 
 
-def test_admin_retains_code_without_chat_markup():
+def test_opus_setup_panel_and_local_key_save(monkeypatch, tmp_path):
+    _set_home(monkeypatch, tmp_path)
+    _clear_process_config(monkeypatch)
     client = _local_client(create_test_app())
+
     response = client.get("/admin")
     assert response.status_code == 200
-    assert 'id="view-code"' in response.text
-    assert 'id="view-chat"' not in response.text
-    assert "chat_sessions" not in response.text
-    assert client.get("/admin/code").status_code == 200
+    assert "Claude Code Chat Opus 5.5" in response.text
+    assert "Free Claude Code" not in response.text
+    assert client.get(f"/admin/assets/{package_version()}/opus.css").status_code == 200
+    assert client.get(f"/admin/assets/{package_version()}/opus.js").status_code == 200
+
+    configured = client.post(
+        "/admin/api/opus/configure", json={"api_key": "test-local-key"}
+    )
+    assert configured.json() == {"ok": True}
+    fields = client.get("/admin/api/config").json()["fields"]
+    nvidia = next(field for field in fields if field["key"] == "NVIDIA_NIM_API_KEY")
+    assert nvidia["configured"] is True
+    assert nvidia["value"] != "test-local-key"
 
 
 def test_admin_retirement_preview_apply_and_runtime_agree(monkeypatch, tmp_path):

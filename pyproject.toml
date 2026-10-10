@@ -3,9 +3,9 @@ requires = ["hatchling", "hatch-vcs>=0.5.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "free-claude-code"
-dynamic = ["version"]
-description = "Local proxy connecting coding agents to OpenAI-compatible AI providers"
+name = "opus5.5"
+version = "0.2.0"
+description = "Local NVIDIA API setup for Claude Code"
 readme = "README.md"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE"]
@@ -48,6 +48,7 @@ _fcc-update-check = "free_claude_code.updater.check:main"
 fcc-server = "free_claude_code.cli.entrypoints:serve"
 fcc-doctor = "free_claude_code.cli.entrypoints:doctor"
 fcc-claude = "free_claude_code.cli.launchers.claude:launch"
+fcc-opus = "free_claude_code.cli.launchers.claude:launch"
 fcc-codex = "free_claude_code.cli.launchers.codex:launch"
 fcc-pi = "free_claude_code.cli.launchers.pi:launch"
 fcc-opencode = "free_claude_code.cli.launchers.opencode:launch"
@@ -68,9 +69,6 @@ voice_local = [
     "accelerate>=1.15.0",
     "librosa>=1.0.0",
 ]
-
-[tool.hatch.version]
-source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/free_claude_code"]
