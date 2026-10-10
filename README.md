@@ -1,28 +1,50 @@
-# Opus 5.5
+<p align="center">
+  <img src="src/free_claude_code/api/admin_static/brand/funtikstore-logo.png" width="380" alt="FUNTIKSTORE" />
+</p>
 
-Local NVIDIA API setup for Claude Code on macOS.
+# FUNTIKSTORE — Opus 5.5
 
-## Install on macOS
+Local NVIDIA NIM setup for Claude Code, with a FUNTIKSTORE local control panel.
 
-Open **Terminal**, paste this command, and press Return:
+> **Backend disclosure:** this project stores your NVIDIA NIM API key locally and routes requests through the NVIDIA NIM configuration. It does not provide Anthropic API access, an Anthropic subscription, or a guarantee of access to any particular Claude model.
+
+## Install
+
+Choose your system, open its terminal, paste one command, and press Enter.
+
+### Windows
+
+Open **PowerShell** and run:
+
+```powershell
+irm https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install-windows.ps1 | iex
+```
+
+### macOS
+
+Open **Terminal** and run:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install-macos.sh | sh
 ```
 
-The installer starts the local setup page at [http://127.0.0.1:8182/admin](http://127.0.0.1:8182/admin).
+### Linux
 
-1. Paste your NVIDIA API key into the page and select **Save and continue**.
-2. Keep the first Terminal window open: it runs `fcc-server`.
-3. Open a second Terminal window and run:
+Open **Terminal** and run:
 
-   ```sh
-   fcc-opus
-   ```
+```sh
+curl -fsSL https://raw.githubusercontent.com/kesha666-opt/opus5.5/main/scripts/install-linux.sh | sh
+```
 
-The key is stored locally in `~/.opus5.5` and is not sent to this repository.
+The installer starts the private local panel at [http://127.0.0.1:8182/admin](http://127.0.0.1:8182/admin). Paste your own NVIDIA API key there; it is stored only on your computer in `~/.opus5.5`.
 
-## Commands
+Then open a second terminal and run:
+
+```sh
+fcc-opus
+```
+
+## Local commands
 
 ```sh
 # Start the local server
@@ -32,8 +54,8 @@ fcc-server
 fcc-opus
 ```
 
-The local panel is available at `http://127.0.0.1:8182/admin` while the server is running.
+The setup panel is available only while `fcc-server` is running and only from the same computer.
 
 ## License
 
-This project is distributed under the [GNU Affero General Public License v3.0](LICENSE).
+Distributed under the [GNU Affero General Public License v3.0](LICENSE).

@@ -10,7 +10,7 @@
       if (location.protocol === "file:") location.replace("http://127.0.0.1:8182/admin");
       else if (location.search) history.replaceState(null, "", location.pathname);
     </script>
-    <title>Opus 5.5 — NVIDIA API</title>
+    <title>FUNTIKSTORE — NVIDIA NIM setup</title>
     <link rel="license" href="https://github.com/kesha666-opt/opus5.5" />
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/admin/assets/__FCC_VERSION__/opus.css" />
@@ -18,39 +18,31 @@
   <body>
     <main class="shell">
       <section class="panel" aria-labelledby="title">
-        <header class="window-bar">
-          <div class="nvidia-brand" aria-label="NVIDIA">
-            <img class="nvidia-mark" src="/admin/assets/__FCC_VERSION__/providers/nvidia-color.svg" alt="" />
-            <span>NVIDIA</span>
-          </div>
-        </header>
-
-        <div class="intro">
-          <h1 id="title">Enter your API key</h1>
+        <div class="mascot" aria-label="FUNTIKSTORE">
+          <img src="/admin/assets/__FCC_VERSION__/brand/funtikstore-logo.png" alt="FUNTIKSTORE — EvilDigitalShit" />
         </div>
+        <div class="intro"><h1 id="title">NVIDIA NIM API</h1></div>
 
         <noscript>Enable JavaScript and open http://127.0.0.1:8182/admin.</noscript>
         <form id="keyForm" method="post" novalidate>
           <label class="sr-only" for="apiKey">NVIDIA API key</label>
           <div class="input-wrap">
-            <svg class="key-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.4 3.4a6.1 6.1 0 0 0-5.9 7.8L2.6 17v4.4h4.5v-2.1h2.1v-2.1h2.2l1.1-1.1a6.1 6.1 0 1 0 1.9-12.6Zm3.5 6.1a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2Z"/></svg>
-            <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="nvapi-…" maxlength="4096" disabled />
+            <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="nvapi-" maxlength="4096" disabled />
             <button id="toggleKey" class="icon-button reveal" type="button" aria-label="Show key"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.3 3.7 20.4 21.8M9.7 9.8a3.2 3.2 0 0 0 4.5 4.5M6.4 6.6C4.1 8.2 2.5 10.5 2 12c1.3 3.3 5.1 6 10 6 1.6 0 3.1-.3 4.4-.9M10 6.1c.7-.2 1.3-.3 2-.3 4.9 0 8.7 2.7 10 6.2-.5 1.2-1.6 2.8-3.2 4.1M13.8 8.3a3.2 3.2 0 0 1 2 2"/></svg></button>
             <button id="clearKey" class="icon-button clear" type="button" aria-label="Clear key" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+            <button id="saveButton" class="submit-button" type="submit" aria-label="Save API key" disabled><span aria-hidden="true">→</span></button>
           </div>
           <div id="status" class="status neutral" role="status" aria-live="polite">
-            <span class="status-dot" aria-hidden="true"></span>
+            <span class="paw" aria-hidden="true">🐾</span>
             <div>
-              <strong id="statusTitle">Claude Code Chat Opus 5.5</strong>
+              <strong id="statusTitle">FUNTIKSTORE • NVIDIA NIM</strong>
               <p id="statusText" hidden></p>
             </div>
-          </div>
-          <div class="actions">
-            <button id="saveButton" class="primary" type="submit" disabled>Save and continue <span aria-hidden="true">→</span></button>
           </div>
         </form>
       </section>
     </main>
     <script src="/admin/assets/__FCC_VERSION__/opus.js"></script>
+    <script src="/admin/assets/__FCC_VERSION__/funtik-mascot.js"></script>
   </body>
 </html>

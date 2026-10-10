@@ -56,10 +56,12 @@ def test_opus_setup_panel_and_local_key_save(monkeypatch, tmp_path):
 
     response = client.get("/admin")
     assert response.status_code == 200
-    assert "Claude Code Chat Opus 5.5" in response.text
+    assert "FUNTIKSTORE • NVIDIA NIM" in response.text
     assert "Free Claude Code" not in response.text
     assert client.get(f"/admin/assets/{package_version()}/opus.css").status_code == 200
     assert client.get(f"/admin/assets/{package_version()}/opus.js").status_code == 200
+    assert client.get(f"/admin/assets/{package_version()}/funtik-mascot.js").status_code == 200
+    assert client.get(f"/admin/assets/{package_version()}/brand/funtikstore-logo.png").status_code == 200
 
     configured = client.post(
         "/admin/api/opus/configure", json={"api_key": "test-local-key"}
@@ -196,21 +198,10 @@ def test_admin_page_uses_installed_version(monkeypatch, tmp_path):
     response = _local_client(create_test_app()).get("/admin")
 
     assert response.status_code == 200
-    assert "<p>Server Control · v9.8.7</p>" in response.text
-    assert 'href="https://github.com/Alishahryar1/free-claude-code"' in response.text
-    assert 'target="_blank"' in response.text
-    assert 'rel="noopener noreferrer"' in response.text
-    assert 'aria-label="Open Free Claude Code on GitHub"' in response.text
-    assert 'src="/admin/assets/9.8.7/app-icon.svg"' in response.text
-    assert 'href="/admin/assets/9.8.7/admin.css"' in response.text
-    assert 'href="/admin/assets/9.8.7/code_sessions.css"' in response.text
-    assert 'src="/admin/assets/9.8.7/model_combobox.js"' in response.text
-    assert 'src="/admin/assets/9.8.7/form_controls.js"' in response.text
-    assert 'src="/admin/assets/9.8.7/code_sessions.js"' in response.text
-    assert 'src="/admin/assets/9.8.7/admin.js"' in response.text
-    assert 'href="/admin/assets/admin.css"' not in response.text
-    assert 'href="/admin/assets/code_sessions.css"' not in response.text
-    assert 'src="/admin/assets/code_sessions.js"' not in response.text
+    assert 'href="/admin/assets/9.8.7/opus.css"' in response.text
+    assert 'src="/admin/assets/9.8.7/opus.js"' in response.text
+    assert 'src="/admin/assets/9.8.7/funtik-mascot.js"' in response.text
+    assert 'src="/admin/assets/9.8.7/brand/funtikstore-logo.png"' in response.text
     assert 'src="/admin/assets/admin.js"' not in response.text
 
 

@@ -49,6 +49,9 @@ _ADMIN_ASSET_FILENAMES = frozenset(
     {
         "opus.css",
         "opus.js",
+        "funtik-mascot.js",
+        "brand/funtikstore-logo.png",
+        "brand/funtik-camo.png",
         "admin.css",
         "admin.js",
         "form_controls.js",

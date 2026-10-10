@@ -6,6 +6,7 @@ const clearKey = document.querySelector("#clearKey");
 const statusBox = document.querySelector("#status");
 const statusTitle = document.querySelector("#statusTitle");
 const statusText = document.querySelector("#statusText");
+const productName = "FUNTIKSTORE • NVIDIA NIM";
 let keyConfigured = false;
 let busy = true;
 
@@ -59,8 +60,8 @@ async function loadState() {
     } else {
       keyConfigured = Boolean(key?.configured);
       if (keyConfigured) {
-        keyInput.placeholder = "Key saved — enter a new key to replace it";
-        setStatus("ok", "Claude Code Chat Opus 5.5", "Key saved. Open a second Terminal window and run fcc-opus.");
+        keyInput.placeholder = "nvapi-";
+        setStatus("ok", productName, "Key saved locally. Open a second Terminal window and run fcc-opus.");
       }
       setBusy(false);
     }
@@ -83,7 +84,7 @@ clearKey.addEventListener("click", () => {
 
 keyInput.addEventListener("input", () => {
   updateClearButton();
-  setStatus("neutral", "Claude Code Chat Opus 5.5");
+  setStatus("neutral", productName);
 });
 
 form.addEventListener("submit", async (event) => {
@@ -92,7 +93,7 @@ form.addEventListener("submit", async (event) => {
   const apiKey = keyInput.value.trim();
   if (!apiKey) {
     if (keyConfigured) {
-      setStatus("ok", "Claude Code Chat Opus 5.5", "Key saved. Open a second Terminal window and run fcc-opus.");
+      setStatus("ok", productName, "Key saved locally. Open a second Terminal window and run fcc-opus.");
       return;
     }
     setStatus("error", "API key required", "Paste your NVIDIA API key.");
@@ -100,7 +101,7 @@ form.addEventListener("submit", async (event) => {
     return;
   }
   setBusy(true);
-  setStatus("neutral", "Claude Code Chat Opus 5.5", "Saving your key locally…");
+  setStatus("neutral", productName, "Saving your key locally…");
   try {
     const result = await request("/admin/api/opus/configure", {
       method: "POST",
@@ -112,8 +113,8 @@ form.addEventListener("submit", async (event) => {
     keyInput.type = "password";
     toggleKey.setAttribute("aria-label", "Show key");
     updateClearButton();
-    keyInput.placeholder = "Key saved — enter a new key to replace it";
-    setStatus("ok", "Claude Code Chat Opus 5.5", "Key saved. Open a second Terminal window and run fcc-opus.");
+    keyInput.placeholder = "nvapi-";
+    setStatus("ok", productName, "Key saved locally. Open a second Terminal window and run fcc-opus.");
   } catch (error) {
     setStatus("error", "Could not save key", safeMessage(error.message, "Check your key and try again."));
   } finally {

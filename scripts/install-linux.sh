@@ -11,7 +11,7 @@ HEALTH_URL="http://127.0.0.1:8182/health"
 PYTHON_VERSION="3.14.7"
 
 fail() { printf 'Error: %s\n' "$1" >&2; exit 1; }
-[ "$(uname -s)" = Darwin ] || fail 'This installer is for macOS.'
+[ "$(uname -s)" = Linux ] || fail 'This installer is for Linux.'
 [ -n "${HOME:-}" ] || fail 'HOME is not set.'
 case "$REF" in ''|*[!A-Za-z0-9._/-]*) fail 'Invalid installation version.' ;; esac
 command -v curl >/dev/null 2>&1 || fail 'curl is required.'
@@ -59,5 +59,5 @@ for _ in $(seq 1 45); do
 done
 [ "$ready" = 1 ] || fail "The server did not start. See $STATE_DIR/logs/launcher.log"
 printf '%s\n' "$server_pid" > "$STATE_DIR/server.pid"
-open "$ADMIN_URL"
-printf '\nInstalled. Enter your NVIDIA API key in the opened FUNTIKSTORE page.\nThen open a new Terminal window and run: fcc-opus\n'
+if command -v xdg-open >/dev/null 2>&1; then xdg-open "$ADMIN_URL" >/dev/null 2>&1 || true; fi
+printf '\nInstalled. Open %s and enter your NVIDIA API key.\nThen open a new Terminal window and run: fcc-opus\n' "$ADMIN_URL"
