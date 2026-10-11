@@ -7,6 +7,7 @@ $BinDir = Join-Path $HOME ".local\bin"
 $AdminUrl = "http://127.0.0.1:8182/admin"
 $HealthUrl = "http://127.0.0.1:8182/health"
 $PythonVersion = "3.14.7"
+$UvVersion = "0.13.0"
 $ClaudeReleaseBases = @(
   "https://downloads.claude.ai/claude-code-releases",
   "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases"
@@ -57,6 +58,42 @@ function Install-ClaudeCode {
   throw "Claude Code could not be downloaded from its official release hosts. Check network access to downloads.claude.ai and storage.googleapis.com. $($Failures -join ' | ')"
 }
 
+function Install-Uv {
+  param([string] $TemporaryDirectory)
+
+  $UvPlatform = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "aarch64" } else { "x86_64" }
+  $UvChecksums = @{
+    "aarch64" = "cb54028b59aa87f11cf6dec293ce000420043a49a8aea522e822a671321f8932"
+    "x86_64" = "088962f9e7b7bd9ea740c04c650b2a21c8928c345bd99ac24350dc924dba656c"
+  }
+  $Asset = "uv-$UvPlatform-pc-windows-msvc.zip"
+  $Archive = Join-Path $TemporaryDirectory $Asset
+  $Failures = @()
+  foreach ($Base in @(
+    "https://github.com/astral-sh/uv/releases/download/$UvVersion",
+    "https://releases.astral.sh/github/uv/releases/download/$UvVersion"
+  )) {
+    try {
+      Invoke-WebRequest -UseBasicParsing -Uri "$Base/$Asset" -OutFile $Archive -TimeoutSec 180
+      if ((Get-FileHash -Algorithm SHA256 -Path $Archive).Hash -ne $UvChecksums[$UvPlatform]) {
+        throw "Download checksum does not match the official release."
+      }
+      $Extracted = Join-Path $TemporaryDirectory "uv-extracted"
+      Expand-Archive -LiteralPath $Archive -DestinationPath $Extracted -Force
+      $Candidate = Join-Path $Extracted "uv.exe"
+      if (-not (Test-Path $Candidate)) { throw "The uv archive does not contain uv.exe." }
+      & $Candidate --version | Out-Null
+      if ($LASTEXITCODE -ne 0) { throw "The downloaded uv.exe could not start." }
+      New-Item -ItemType Directory -Force -Path $BinDir | Out-Null
+      Move-Item -LiteralPath $Candidate -Destination (Join-Path $BinDir "uv.exe") -Force
+      return (Join-Path $BinDir "uv.exe")
+    } catch {
+      $Failures += "${Base}: $($_.Exception.Message)"
+    }
+  }
+  throw "uv could not be downloaded from its official release hosts. $($Failures -join ' | ')"
+}
+
 if ($Ref -notmatch '^[A-Za-z0-9._/-]+$') { throw "Invalid installation version." }
 if (Test-NetConnection -ComputerName 127.0.0.1 -Port 8182 -InformationLevel Quiet) {
   throw "Port 8182 is already in use. Stop the existing server before installing."
@@ -74,13 +111,7 @@ try {
   $UvExecutable = if ($Uv) { $Uv.Source } else { $null }
   if (-not $UvExecutable) {
     Write-Host "Installing the setup runtime…"
-    $UvBootstrap = (Invoke-WebRequest -UseBasicParsing -Uri "https://astral.sh/uv/install.ps1" -TimeoutSec 30).Content
-    if ($UvBootstrap -notmatch '(?m)^\s*(?:param\s*\(|#|function\s|\$)' -or $UvBootstrap -match '(?i)<html|<Error>') {
-      throw "The uv installer download was not PowerShell. Check access to astral.sh."
-    }
-    Invoke-Expression $UvBootstrap
-    $Uv = Get-Command uv -CommandType Application -ErrorAction SilentlyContinue
-    if ($Uv) { $UvExecutable = $Uv.Source }
+    $UvExecutable = Install-Uv -TemporaryDirectory $WorkDir
   }
   if (-not $UvExecutable) {
     $UvPath = Join-Path $BinDir "uv.exe"
