@@ -31,9 +31,15 @@
             <button id="saveButton" class="submit-button" type="submit" aria-label="Save API key" disabled><span aria-hidden="true">→</span></button>
           </div>
           <div id="status" class="status neutral" role="status" aria-live="polite">
-            <span class="paw" aria-hidden="true">🐾</span>
+            <svg class="paw" viewBox="0 0 64 64" aria-hidden="true">
+              <ellipse cx="18" cy="20" rx="7" ry="9" />
+              <ellipse cx="31" cy="13" rx="7" ry="9" />
+              <ellipse cx="44" cy="20" rx="7" ry="9" />
+              <ellipse cx="51" cy="33" rx="7" ry="9" />
+              <path d="M12 48c0-11 9-19 20-19s20 8 20 19c0 6-5 10-10 8-4-2-6-5-10-5s-6 3-10 5c-5 2-10-2-10-8Z" />
+            </svg>
             <div>
-              <strong id="statusTitle">FUNTIKSTORE • NVIDIA NIM</strong>
+              <strong id="statusTitle" class="sr-only">FUNTIKSTORE</strong>
               <p id="statusText" hidden></p>
             </div>
           </div>

@@ -32,7 +32,7 @@ body::before {
   position: relative;
   width: min(100%, 415px);
   aspect-ratio: 1 / .75;
-  margin: 0 auto -8px;
+  margin: 0 auto 38px;
   overflow: hidden;
   clip-path: polygon(24% .5%, 28% 1%, 40% 8%, 47% 6%, 58% 6%, 68% 10%, 79% 3%, 83% 2%, 85% 5%, 84% 17%, 81% 27%, 85% 34%, 89% 45%, 90% 57%, 89% 62%, 94% 66%, 94% 73%, 91% 76%, 91% 85%, 84% 93%, 69% 93%, 65% 96%, 34% 96%, 29% 93%, 17% 93%, 9% 86%, 9% 76%, 6% 73%, 6% 66%, 11% 61%, 10% 52%, 11% 43%, 16% 31%, 22% 24%, 22% 14%, 23% 4%);
 }
@@ -90,21 +90,21 @@ input:focus { background: rgba(255,255,255,.035); }
 .submit-button:hover { background: #151315; }
 .icon-button:disabled, .submit-button:disabled { cursor: wait; opacity: .48; }
 
-.status { display: flex; align-items: center; justify-content: center; gap: 11px; min-height: 66px; padding: 9px 12px; }
+.status { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; min-height: 119px; padding: 26px 12px 9px; }
 .paw {
-  display: inline-grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
+  display: block;
+  width: 57px;
+  height: 57px;
   color: #f4a0bd;
-  font-size: 42px;
-  line-height: 1;
-  filter: drop-shadow(2px 0 #050505) drop-shadow(-2px 0 #050505) drop-shadow(0 2px #050505) drop-shadow(0 -2px #050505);
+  fill: currentColor;
+  stroke: #050505;
+  stroke-width: 4.5px;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
 }
-.status strong { display: block; color: #f7f4f5; font-size: 14px; letter-spacing: .055em; }
-.status p { max-width: 420px; margin: 4px 0 0; color: #ede8ea; font-size: 12px; line-height: 1.35; }
-.status.ok .paw, .status.ok strong { color: #76d88a; }
-.status.error .paw, .status.error strong { color: #fa7d98; }
+.status p { max-width: 560px; margin: 0; color: #ede8ea; font-size: 12px; line-height: 1.35; }
+.status.ok .paw { color: #76d88a; }
+.status.error .paw { color: #fa7d98; }
 
 @media (max-width: 540px) {
   .shell { padding: 22px 13px; }
@@ -114,9 +114,8 @@ input:focus { background: rgba(255,255,255,.035); }
   input { font-size: 14px; }
   .icon-button, .submit-button { flex-basis: 47px; width: 47px; }
   .clear { flex-basis: 34px; width: 34px; }
-  .status { min-height: 59px; }
-  .paw { width: 42px; height: 42px; font-size: 36px; }
-  .status strong { font-size: 11px; }
+  .status { min-height: 108px; padding-top: 23px; }
+  .paw { width: 52px; height: 52px; }
   .status p { font-size: 11px; }
 }
 
