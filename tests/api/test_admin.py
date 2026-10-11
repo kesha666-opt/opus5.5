@@ -17,10 +17,12 @@ from free_claude_code.application.model_metadata import (
     ProviderModelRefreshResult,
 )
 from free_claude_code.config.admin.values import MASKED_SECRET
+from free_claude_code.config.loader import ManagedConfigStore
 from free_claude_code.config.provider_catalog import PROVIDER_CATALOG
 from free_claude_code.config.server_urls import local_admin_url
 from free_claude_code.config.settings import Settings
 from free_claude_code.core.version import package_version
+from free_claude_code.providers.runtime.config import build_provider_config
 from tests.api.support import create_test_app, provider_manager_for_app, runtime_for_app
 
 
@@ -60,8 +62,16 @@ def test_opus_setup_panel_and_local_key_save(monkeypatch, tmp_path):
     assert "Free Claude Code" not in response.text
     assert client.get(f"/admin/assets/{package_version()}/opus.css").status_code == 200
     assert client.get(f"/admin/assets/{package_version()}/opus.js").status_code == 200
-    assert client.get(f"/admin/assets/{package_version()}/funtik-mascot.js").status_code == 200
-    assert client.get(f"/admin/assets/{package_version()}/brand/funtikstore-logo.png").status_code == 200
+    assert (
+        client.get(f"/admin/assets/{package_version()}/funtik-mascot.js").status_code
+        == 200
+    )
+    assert (
+        client.get(
+            f"/admin/assets/{package_version()}/brand/funtikstore-logo.png"
+        ).status_code
+        == 200
+    )
 
     configured = client.post(
         "/admin/api/opus/configure", json={"api_key": "test-local-key"}
@@ -70,7 +80,33 @@ def test_opus_setup_panel_and_local_key_save(monkeypatch, tmp_path):
     fields = client.get("/admin/api/config").json()["fields"]
     nvidia = next(field for field in fields if field["key"] == "NVIDIA_NIM_API_KEY")
     assert nvidia["configured"] is True
-    assert nvidia["value"] != "test-local-key"
+    assert nvidia["value"] == MASKED_SECRET
+    assert nvidia["source"] == "managed_env"
+
+    # A fresh disk read must provide the credential to the actual NIM provider.
+    reloaded = ManagedConfigStore().read()
+    assert reloaded.managed["NVIDIA_NIM_API_KEY"] == "test-local-key"
+    provider = build_provider_config(PROVIDER_CATALOG["nvidia_nim"], reloaded.settings)
+    assert provider.api_key == "test-local-key"
+
+
+def test_opus_setup_does_not_claim_to_save_a_process_locked_key(monkeypatch, tmp_path):
+    _set_home(monkeypatch, tmp_path)
+    _clear_process_config(monkeypatch)
+    monkeypatch.setenv("NVIDIA_NIM_API_KEY", "process-owned-key")
+    client = _local_client(create_test_app())
+
+    response = client.post(
+        "/admin/api/opus/configure", json={"api_key": "replacement-key"}
+    )
+    assert response.json()["ok"] is False
+    state = next(
+        field
+        for field in client.get("/admin/api/config").json()["fields"]
+        if field["key"] == "NVIDIA_NIM_API_KEY"
+    )
+    assert state["locked"] is True
+    assert state["value"] == MASKED_SECRET
 
 
 def test_admin_retirement_preview_apply_and_runtime_agree(monkeypatch, tmp_path):

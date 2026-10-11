@@ -6,6 +6,7 @@ const clearKey = document.querySelector("#clearKey");
 const statusBox = document.querySelector("#status");
 const statusTitle = document.querySelector("#statusTitle");
 const statusText = document.querySelector("#statusText");
+const keyState = document.querySelector("#keyState");
 const productName = "FUNTIKSTORE";
 let keyConfigured = false;
 let busy = true;
@@ -13,7 +14,8 @@ let busy = true;
 function setBusy(value) {
   busy = value;
   form.setAttribute("aria-busy", String(value));
-  for (const control of [keyInput, saveButton, toggleKey, clearKey]) control.disabled = value;
+  for (const control of [keyInput, saveButton]) control.disabled = value;
+  for (const control of [toggleKey, clearKey]) control.disabled = value || !keyInput.value;
 }
 
 function setStatus(kind, title, text) {
@@ -25,6 +27,13 @@ function setStatus(kind, title, text) {
 
 function updateClearButton() {
   clearKey.hidden = !keyInput.value;
+  toggleKey.disabled = busy || !keyInput.value;
+  clearKey.disabled = busy || !keyInput.value;
+}
+
+function updateSavedState() {
+  keyState.hidden = !keyConfigured;
+  keyInput.placeholder = keyConfigured ? "Saved — paste a new key to replace" : "nvapi-";
 }
 
 async function request(path, options = {}) {
@@ -59,9 +68,9 @@ async function loadState() {
       setStatus("error", "Settings locked", "The key is set through an environment variable. Remove it and restart Opus 5.5 to change the key here.");
     } else {
       keyConfigured = Boolean(key?.configured);
+      updateSavedState();
       if (keyConfigured) {
-        keyInput.placeholder = "nvapi-";
-        setStatus("ok", productName, "Key saved locally. Open a second Terminal window and run fcc-opus.");
+        setStatus("ok", productName, "Stored locally. NVIDIA API access is checked when you send a request.");
       }
       setBusy(false);
     }
@@ -84,7 +93,7 @@ clearKey.addEventListener("click", () => {
 
 keyInput.addEventListener("input", () => {
   updateClearButton();
-  setStatus("neutral", productName);
+  setStatus("neutral", productName, keyConfigured ? "Your saved key stays active until you save a replacement." : "");
 });
 
 form.addEventListener("submit", async (event) => {
@@ -93,7 +102,7 @@ form.addEventListener("submit", async (event) => {
   const apiKey = keyInput.value.trim();
   if (!apiKey) {
     if (keyConfigured) {
-      setStatus("ok", productName, "Key saved locally. Open a second Terminal window and run fcc-opus.");
+      setStatus("ok", productName, "Stored locally. NVIDIA API access is checked when you send a request.");
       return;
     }
     setStatus("error", "API key required", "Paste your NVIDIA API key.");
@@ -113,8 +122,8 @@ form.addEventListener("submit", async (event) => {
     keyInput.type = "password";
     toggleKey.setAttribute("aria-label", "Show key");
     updateClearButton();
-    keyInput.placeholder = "nvapi-";
-    setStatus("ok", productName, "Key saved locally. Open a second Terminal window and run fcc-opus.");
+    updateSavedState();
+    setStatus("ok", productName, "Storage verified. Open PowerShell and run fcc-opus; NVIDIA API access is checked on the first request.");
   } catch (error) {
     setStatus("error", "Could not save key", safeMessage(error.message, "Check your key and try again."));
   } finally {

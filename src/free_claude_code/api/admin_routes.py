@@ -214,6 +214,9 @@ async def configure_opus_nvidia(
     result = await services.admin.apply_admin_config({"NVIDIA_NIM_API_KEY": api_key})
     if not result.get("applied"):
         return {"ok": False, "message": "The key could not be saved."}
+    saved = (await services.admin.admin_values())["NVIDIA_NIM_API_KEY"]
+    if saved.source != "managed_env" or saved.value != api_key:
+        return {"ok": False, "message": "The saved key could not be verified."}
     return {"ok": True}
 
 
