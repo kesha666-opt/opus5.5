@@ -37,7 +37,7 @@ jobs:
           }
           $stateDir = Join-Path $HOME '.opus5.5'
           New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
-          Set-Content -Path (Join-Path $stateDir '.env') -Value "HOST=127.0.0.1`nPORT=8182`nNVIDIA_NIM_API_KEY=nvapi-existing-smoke-key`n" -NoNewline
+          Set-Content -Path (Join-Path $stateDir '.env') -Value "HOST=127.0.0.1`nPORT=8182`nFCC_OPEN_BROWSER=false`nNVIDIA_NIM_API_KEY=nvapi-existing-smoke-key`n" -NoNewline
           & .\scripts\install-windows.ps1
           if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "Installer failed: $LASTEXITCODE" }
           & "$HOME\.local\bin\claude.exe" --version
