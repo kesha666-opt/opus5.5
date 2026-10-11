@@ -8,7 +8,7 @@
  start=()=>{
   if(reduced.matches||!fine.matches)return;
   const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');
-  const gl=canvas.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:false});
+  const gl=canvas.getContext('webgl',{alpha:true,antialias:false,preserveDrawingBuffer:false});
   if(!gl)return;
   const shader=(kind,source)=>{const s=gl.createShader(kind);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s};
   try{
