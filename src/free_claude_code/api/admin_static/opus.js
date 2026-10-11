@@ -6,7 +6,7 @@ const clearKey = document.querySelector("#clearKey");
 const statusBox = document.querySelector("#status");
 const statusTitle = document.querySelector("#statusTitle");
 const statusText = document.querySelector("#statusText");
-const productName = "FUNTIKSTORE • NVIDIA NIM";
+const productName = "FUNTIKSTORE";
 let keyConfigured = false;
 let busy = true;
 

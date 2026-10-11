@@ -56,7 +56,7 @@ def test_opus_setup_panel_and_local_key_save(monkeypatch, tmp_path):
 
     response = client.get("/admin")
     assert response.status_code == 200
-    assert "FUNTIKSTORE • NVIDIA NIM" in response.text
+    assert "FUNTIKSTORE" in response.text
     assert "Free Claude Code" not in response.text
     assert client.get(f"/admin/assets/{package_version()}/opus.css").status_code == 200
     assert client.get(f"/admin/assets/{package_version()}/opus.js").status_code == 200
