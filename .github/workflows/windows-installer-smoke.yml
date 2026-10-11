@@ -35,6 +35,9 @@ jobs:
           foreach ($name in @('python', 'uv', 'winget')) {
             if (Get-Command $name -ErrorAction SilentlyContinue) { throw "$name unexpectedly found on PATH" }
           }
+          $stateDir = Join-Path $HOME '.opus5.5'
+          New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
+          Set-Content -Path (Join-Path $stateDir '.env') -Value "HOST=127.0.0.1`nPORT=8182`nNVIDIA_NIM_API_KEY=nvapi-existing-smoke-key`n" -NoNewline
           & .\scripts\install-windows.ps1
           if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "Installer failed: $LASTEXITCODE" }
           & "$HOME\.local\bin\claude.exe" --version
@@ -43,11 +46,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Opus client did not start' }
           $health = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8182/health' -TimeoutSec 5
           if ($health.StatusCode -ne 200) { throw 'Local server is not healthy' }
+          $envFile = Join-Path $stateDir '.env'
+          if (-not ((Get-Content -Raw $envFile) -match 'NVIDIA_NIM_API_KEY=nvapi-existing-smoke-key')) { throw 'Installer erased the existing API key' }
           $adminUrl = 'http://127.0.0.1:8182/admin/api'
           $saved = Invoke-RestMethod -Uri "$adminUrl/opus/configure" -Method Post -ContentType 'application/json' -Body '{"api_key":"nvapi-fake-smoke-key"}' -TimeoutSec 10
           if (-not $saved.ok) { throw 'Admin panel did not confirm the saved key' }
           $config = Invoke-RestMethod -Uri "$adminUrl/config" -TimeoutSec 10
           $key = $config.fields | Where-Object { $_.key -eq 'NVIDIA_NIM_API_KEY' }
           if (-not $key.configured -or $key.source -ne 'managed_env' -or $key.value -ne '********') { throw 'Admin panel did not report the saved key as configured and masked' }
-          $envFile = Join-Path $HOME '.opus5.5\.env'
           if (-not (Test-Path $envFile) -or -not ((Get-Content -Raw $envFile) -match 'NVIDIA_NIM_API_KEY=nvapi-fake-smoke-key')) { throw 'Admin panel did not persist the key on Windows' }

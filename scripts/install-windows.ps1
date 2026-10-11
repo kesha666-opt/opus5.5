@@ -140,7 +140,10 @@ try {
   }
 
   New-Item -ItemType Directory -Force -Path (Join-Path $StateDir "logs") | Out-Null
-  Set-Content -Path (Join-Path $StateDir ".env") -Value "HOST=127.0.0.1`nPORT=8182`nFCC_OPEN_BROWSER=false`n" -NoNewline
+  $EnvPath = Join-Path $StateDir ".env"
+  if (-not (Test-Path $EnvPath)) {
+    Set-Content -Path $EnvPath -Value "HOST=127.0.0.1`nPORT=8182`nFCC_OPEN_BROWSER=false`n" -NoNewline
+  }
   $ServerPath = Join-Path $BinDir "fcc-server.exe"
   if (-not (Test-Path $ServerPath)) {
     $Server = Get-Command fcc-server -ErrorAction Stop
