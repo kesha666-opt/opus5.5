@@ -1,4 +1,5 @@
 $ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
 
 $Repository = "kesha666-opt/opus5.5"
 $Ref = if ($env:OPUS_REF) { $env:OPUS_REF } else { "main" }
@@ -38,6 +39,7 @@ function Install-ClaudeCode {
       }
 
       $Candidate = Join-Path $TemporaryDirectory "claude-$Platform.exe"
+      Write-Host "Downloading Claude Code $Version from $(([uri] $Base).Host)…"
       Invoke-WebRequest -UseBasicParsing -Uri "$Base/$Version/$Platform/claude.exe" -OutFile $Candidate -TimeoutSec 600
       if ((Get-Item $Candidate).Length -ne [long] $Release.size) { throw "Download size does not match the official manifest." }
       $Checksum = (Get-FileHash -Algorithm SHA256 -Path $Candidate).Hash
