@@ -1,0 +1,33 @@
+name: Windows installer smoke
+
+on:
+  pull_request:
+    paths:
+      - scripts/install-windows.ps1
+      - .github/workflows/windows-installer-smoke.yml
+  workflow_dispatch:
+
+jobs:
+  fresh-windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install with no Python, uv, or WinGet on PATH
+        shell: powershell
+        env:
+          OPUS_REF: ${{ github.head_ref || github.ref_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:Path = "$env:WINDIR\System32;$env:WINDIR;$env:WINDIR\System32\WindowsPowerShell\v1.0"
+          foreach ($name in @('python', 'uv', 'winget')) {
+            if (Get-Command $name -ErrorAction SilentlyContinue) { throw "$name unexpectedly found on PATH" }
+          }
+          & .\scripts\install-windows.ps1
+          if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "Installer failed: $LASTEXITCODE" }
+          & "$HOME\.local\bin\claude.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw 'Claude Code did not start' }
+          & "$HOME\.local\bin\fcc-opus.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw 'Opus client did not start' }
+          $health = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8182/health' -TimeoutSec 5
+          if ($health.StatusCode -ne 200) { throw 'Local server is not healthy' }
