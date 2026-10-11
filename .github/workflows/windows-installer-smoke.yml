@@ -1,6 +1,12 @@
 name: Windows installer smoke
 
 on:
+  push:
+    branches:
+      - fix-windows-clean-bootstrap
+    paths:
+      - scripts/install-windows.ps1
+      - .github/workflows/windows-installer-smoke.yml
   pull_request:
     paths:
       - scripts/install-windows.ps1
