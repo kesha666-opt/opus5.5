@@ -23,15 +23,15 @@ FCC_COMMANDS="fcc-desktop fcc-server fcc-claude fcc-codex fcc-pi fcc-opencode fc
 dry_run=0
 voice_local=0
 install_claude=1
-install_codex=1
-install_pi=1
-install_opencode=1
+install_codex=0
+install_pi=0
+install_opencode=0
 install_cline=0
-install_hermes=1
-install_dsh=1
-install_grok=1
-install_muse=1
-install_aider=1
+install_hermes=0
+install_dsh=0
+install_grok=0
+install_muse=0
+install_aider=0
 enable_rtk=0
 torch_backend=""
 temporary_file=""
@@ -61,7 +61,7 @@ show_usage() {
     cat <<'USAGE'
 Usage: install.sh [options]
 
-Installs or updates Free Claude Code and lets you choose which coding agents to install or verify.
+Installs or updates Free Claude Code and Claude Code.
 
 Options:
   --voice-local            Install local Whisper voice transcription support.
@@ -264,78 +264,23 @@ choose_coding_agents() {
     exec 3<"$selection_input"
     exec 4>"$selection_output"
 
-    while :; do
-        if select_coding_agent claude "Claude Code" fcc-claude; then
-            install_claude=1
-        else
-            install_claude=0
-        fi
-        if select_coding_agent codex Codex fcc-codex; then
-            install_codex=1
-        else
-            install_codex=0
-        fi
-        if select_coding_agent pi Pi fcc-pi; then
-            install_pi=1
-        else
-            install_pi=0
-        fi
-        if select_coding_agent opencode OpenCode fcc-opencode; then
-            install_opencode=1
-        else
-            install_opencode=0
-        fi
-
-        if select_coding_agent cline "Cline CLI" fcc-cline; then
-            install_cline=1
-        else
-            install_cline=0
-        fi
-
-        if select_coding_agent hermes "Hermes Agent" fcc-hermes; then
-            install_hermes=1
-        else
-            install_hermes=0
-        fi
-
-        if select_coding_agent dsh "DeepSeek Harness" fcc-dsh; then
-            install_dsh=1
-        else
-            install_dsh=0
-        fi
-
-        if select_coding_agent grok "Grok Build" fcc-grok; then
-            install_grok=1
-        else
-            install_grok=0
-        fi
-
-        if select_coding_agent muse "Muse Code" fcc-muse; then
-            install_muse=1
-        else
-            install_muse=0
-        fi
-
-        if select_coding_agent aider Aider fcc-aider; then
-            install_aider=1
-        else
-            install_aider=0
-        fi
-
-        if [ "$install_claude" -eq 1 ] || [ "$install_codex" -eq 1 ] || [ "$install_pi" -eq 1 ] || [ "$install_opencode" -eq 1 ] || [ "$install_cline" -eq 1 ] || [ "$install_hermes" -eq 1 ] || [ "$install_dsh" -eq 1 ] || [ "$install_grok" -eq 1 ] || [ "$install_muse" -eq 1 ] || [ "$install_aider" -eq 1 ]; then
-            break
-        fi
-        printf 'Select at least one coding agent.\n\n' >&4
-    done
-
-    if [ "$enable_rtk" -eq 0 ]; then
-        if command -v rtk >/dev/null 2>&1; then
-            printf 'RTK already installed; will verify.\n' >&4
-            enable_rtk=1
-        elif prompt_yes_no "Enable RTK token optimization globally for the selected coding agents?" no; then
-            enable_rtk=1
-        fi
+    # Opus installs only Claude Code. Legacy agents stay disabled without a
+    # long questionnaire during a client installation.
+    if select_coding_agent claude "Claude Code" fcc-claude; then
+        install_claude=1
+    else
+        install_claude=0
     fi
+    install_codex=0
+    install_pi=0
+    install_opencode=0
+    install_cline=0
+    install_hermes=0
+    install_dsh=0
+    install_grok=0
+    install_muse=0
+    install_aider=0
+    enable_rtk=0
 
     exec 3<&-
     exec 4>&-
@@ -1635,22 +1580,11 @@ start_install_step Preflight
 # Preserve the user's winning command before adding installer search paths.
 original_opencode_path=$(command -v opencode || true)
 add_known_bin_directories
-if command -v cline >/dev/null 2>&1 || command -v npm >/dev/null 2>&1; then
-    install_cline=1
-fi
 if ! command -v hermes >/dev/null 2>&1 && ! hermes_platform_is_supported; then
     install_hermes=0
 fi
 step "Checking for running Free Claude Code processes"
 assert_no_fcc_processes_running
-
-if ! installer_is_interactive && ! command -v dsh >/dev/null 2>&1; then
-    if [ "$dry_run" -eq 1 ] && command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
-        install_dsh=1
-    elif ! dsh_toolchain_is_supported; then
-        install_dsh=0
-    fi
-fi
 
 if installer_is_interactive; then
     step "Choosing coding agents"

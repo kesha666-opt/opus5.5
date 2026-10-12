@@ -30,15 +30,15 @@ $RtkWindowsAssetName = "rtk-x86_64-pc-windows-msvc.zip"
 $RtkWindowsAssetSha256 = "3a1e114edce9080f8a10663e9c87488363a82f14a5ca8aab2ad416817f89d47c"
 $UvInstallUrl = "https://astral.sh/uv/install.ps1"
 $script:InstallClaudeCode = $true
-$script:InstallCodex = $true
-$script:InstallPi = $true
-$script:InstallOpenCode = $true
+$script:InstallCodex = $false
+$script:InstallPi = $false
+$script:InstallOpenCode = $false
 $script:InstallCline = $false
-$script:InstallHermes = $true
-$script:InstallDsh = $true
-$script:InstallGrok = $true
-$script:InstallMuse = $true
-$script:InstallAider = $true
+$script:InstallHermes = $false
+$script:InstallDsh = $false
+$script:InstallGrok = $false
+$script:InstallMuse = $false
+$script:InstallAider = $false
 $script:PiAvailable = $false
 $script:MuseAvailable = $false
 $script:EnableRtk = $Rtk.IsPresent
@@ -76,7 +76,7 @@ function Show-Usage {
     @"
 Usage: install.ps1 [options]
 
-Installs or updates Free Claude Code and lets you choose which coding agents to install or verify.
+Installs or updates Free Claude Code and Claude Code.
 
 Options:
   -VoiceLocal            Install local Whisper voice transcription support.
@@ -299,36 +299,19 @@ function Read-CodingAgentSelection {
 }
 
 function Select-CodingAgents {
-    while ($true) {
-        $script:InstallClaudeCode = Read-CodingAgentSelection claude "Claude Code" fcc-claude
-        $script:InstallCodex = Read-CodingAgentSelection codex Codex fcc-codex
-        $script:InstallPi = Read-CodingAgentSelection pi Pi fcc-pi
-        $script:InstallOpenCode = Read-CodingAgentSelection opencode OpenCode fcc-opencode
-        $script:InstallCline = Read-CodingAgentSelection cline "Cline CLI" fcc-cline
-        $script:InstallHermes = Read-CodingAgentSelection hermes "Hermes Agent" fcc-hermes
-        $script:InstallDsh = Read-CodingAgentSelection dsh "DeepSeek Harness" fcc-dsh
-        $script:InstallGrok = Read-CodingAgentSelection grok "Grok Build" fcc-grok
-        $script:InstallMuse = Read-CodingAgentSelection muse "Muse Code" fcc-muse
-        $script:InstallAider = Read-CodingAgentSelection aider Aider fcc-aider
-
-        if ($script:InstallClaudeCode -or $script:InstallCodex -or $script:InstallPi -or $script:InstallOpenCode -or $script:InstallCline -or $script:InstallHermes -or $script:InstallDsh -or $script:InstallGrok -or $script:InstallMuse -or $script:InstallAider) {
-            break
-        }
-        Write-Host "Select at least one coding agent."
-        Write-Host ""
-    }
-
-    if (-not $script:EnableRtk) {
-        if (Get-ApplicationCommand "rtk") {
-            Write-Host "RTK already installed; will verify."
-            $script:EnableRtk = $true
-        }
-        else {
-            $script:EnableRtk = Read-YesNo `
-                -Prompt "Enable RTK token optimization globally for the selected coding agents?" `
-                -DefaultYes $false
-        }
-    }
+    # Opus installs only Claude Code. Legacy agents stay disabled without a
+    # long questionnaire during a client installation.
+    $script:InstallClaudeCode = Read-CodingAgentSelection claude "Claude Code" fcc-claude
+    $script:InstallCodex = $false
+    $script:InstallPi = $false
+    $script:InstallOpenCode = $false
+    $script:InstallCline = $false
+    $script:InstallHermes = $false
+    $script:InstallDsh = $false
+    $script:InstallGrok = $false
+    $script:InstallMuse = $false
+    $script:InstallAider = $false
+    $script:EnableRtk = $false
 }
 
 function Format-Argument {
@@ -1861,19 +1844,8 @@ try {
     # Preserve the user's winning command before adding installer search paths.
     $script:OriginalOpenCode = Get-ApplicationCommand "opencode"
     Add-KnownBinDirectories
-    $script:InstallCline = [bool] ((Get-ApplicationCommand "cline") -or (Get-ApplicationCommand "npm"))
     Write-Step "Checking for running Free Claude Code processes"
     Assert-NoFccProcessesRunning
-
-    if (-not (Test-InteractiveInstaller)) {
-        $hasDsh = [bool] (Get-ApplicationCommand "dsh")
-        $hasDryRunToolchain = [bool] (
-            $DryRun -and
-            (Get-ApplicationCommand "node") -and
-            (Get-ApplicationCommand "npm")
-        )
-        $script:InstallDsh = $hasDsh -or $hasDryRunToolchain -or (Test-DshToolchain)
-    }
 
     if (Test-InteractiveInstaller) {
         Write-Step "Choosing coding agents"
