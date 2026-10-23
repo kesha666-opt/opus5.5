@@ -2078,7 +2078,7 @@ def test_admin_never_reads_arbitrary_current_directory_env(monkeypatch, tmp_path
 
     config = _local_client(app).get("/admin/api/config").json()
     model_field = next(field for field in config["fields"] if field["key"] == "MODEL")
-    assert model_field["value"] == "nvidia_nim/nvidia/nemotron-3-super-120b-a12b"
+    assert model_field["value"] == "nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b"
     assert model_field["source"] == "default"
 
     response = _local_client(app).post(
