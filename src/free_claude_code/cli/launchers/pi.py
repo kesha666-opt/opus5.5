@@ -30,7 +30,7 @@ def _configure(
     extension_path = pi_extension_path()
     if not extension_path.is_file():
         raise ValueError(
-            "Free Claude Code's bundled Pi extension is missing. Reinstall FCC."
+            "Opus 5.5's bundled Pi extension is missing. Reinstall FCC."
         )
     return PreparedLaunch(
         [

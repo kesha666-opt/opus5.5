@@ -83,7 +83,7 @@ def build_dsh_provider(
 
     stream_idle_timeout_ms = _stream_idle_timeout_ms(provider_progress_timeout)
     return {
-        "displayName": "Free Claude Code",
+        "displayName": "Opus 5.5",
         "apiKeyEnv": credential_ref,
         "api": "openai-responses",
         "baseURL": proxy_v1_url(proxy_root_url),

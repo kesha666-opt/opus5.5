@@ -76,7 +76,7 @@ function Show-Usage {
     @"
 Usage: install.ps1 [options]
 
-Installs or updates Free Claude Code and Claude Code.
+Installs or updates Opus 5.5 and Claude Code.
 
 Options:
   -VoiceLocal            Install local Whisper voice transcription support.
@@ -116,7 +116,7 @@ function Initialize-InstallLog {
         $directory = Join-Path $env:USERPROFILE ".fcc\logs"
         [void] [IO.Directory]::CreateDirectory($directory)
         $script:InstallLog = Join-Path $directory ("install-$(Get-Date -Format yyyyMMdd-HHmmss)-$([guid]::NewGuid().ToString('N')).log")
-        Write-InstallLog "Starting Free Claude Code installer"
+        Write-InstallLog "Starting Opus 5.5 installer"
     }
     catch {
         $script:InstallLogWarning = $true
@@ -520,7 +520,7 @@ function Assert-NoFccProcessesRunning {
     }
 
     if ($running.Count -gt 0) {
-        throw "Free Claude Code is still running ($($running -join ', ')). Stop those processes, then rerun the installer."
+        throw "Opus 5.5 is still running ($($running -join ', ')). Stop those processes, then rerun the installer."
     }
 }
 
@@ -1621,7 +1621,7 @@ function Install-FreeClaudeCode {
     if (-not $DryRun) {
         $uvCommand = Get-ApplicationCommand "uv"
         if (-not $uvCommand) {
-            throw "uv is not available for the Free Claude Code installation."
+            throw "uv is not available for the Opus 5.5 installation."
         }
         $uvPath = $uvCommand.Source
     }
@@ -1658,7 +1658,7 @@ function Export-FccDesktopIcon {
         throw "Command failed with exit code ${exitCode}: $commandText"
     }
     if (-not (Test-Path -LiteralPath $IconPath -PathType Leaf)) {
-        throw "Free Claude Code did not export its Windows app icon to '$IconPath'."
+        throw "Opus 5.5 did not export its Windows app icon to '$IconPath'."
     }
 }
 
@@ -1694,7 +1694,7 @@ function Configure-AndConfirmFreeClaudeCode {
     foreach ($commandName in @("fcc-desktop", "fcc-server", "fcc-claude", "fcc-codex", "fcc-pi", "fcc-opencode", "fcc-cline", "fcc-hermes", "fcc-dsh", "fcc-grok", "fcc-muse", "fcc-aider", "fcc-doctor", "fcc-update.cmd")) {
         $command = Get-ApplicationCommand $commandName
         if (-not $command) {
-            throw "Free Claude Code installation did not create '$commandName'."
+            throw "Opus 5.5 installation did not create '$commandName'."
         }
         $commandDirectory = ([IO.Path]::GetFullPath((Split-Path -Parent $command.Source))).TrimEnd(
             [IO.Path]::DirectorySeparatorChar,
@@ -1766,7 +1766,7 @@ function Install-FccDesktopShortcuts {
                 $isFccShortcut = $false
             }
             if (-not $isFccShortcut) {
-                Write-Host "A shortcut not managed by Free Claude Code already exists at $shortcutPath; leaving it unchanged."
+                Write-Host "A shortcut not managed by Opus 5.5 already exists at $shortcutPath; leaving it unchanged."
                 continue
             }
         }
@@ -1776,16 +1776,16 @@ function Install-FccDesktopShortcuts {
         $shortcut.TargetPath = $DesktopCommand
         $shortcut.WorkingDirectory = $env:USERPROFILE
         $shortcut.IconLocation = "$IconPath,0"
-        $shortcut.Description = "Run Free Claude Code in the background"
+        $shortcut.Description = "Run Opus 5.5 in the background"
         $shortcut.Save()
         if ($shortcutPath -eq $shortcutPaths[0]) { $script:DesktopReady = $true }
     }
 }
 
 function Show-InstallerNextSteps {
-    Write-Host "`nFree Claude Code is installed and verified."
+    Write-Host "`nOpus 5.5 is installed and verified."
     if ($script:DesktopReady) {
-        Write-Host "Open the Free Claude Code desktop shortcut to run it in the background."
+        Write-Host "Open the Opus 5.5 desktop shortcut to run it in the background."
     }
     Write-Host "For terminal use, start the proxy with: fcc-server"
     if ($script:InstallClaudeCode) {
@@ -1844,7 +1844,7 @@ try {
     # Preserve the user's winning command before adding installer search paths.
     $script:OriginalOpenCode = Get-ApplicationCommand "opencode"
     Add-KnownBinDirectories
-    Write-Step "Checking for running Free Claude Code processes"
+    Write-Step "Checking for running Opus 5.5 processes"
     Assert-NoFccProcessesRunning
 
     if (Test-InteractiveInstaller) {
@@ -1872,7 +1872,7 @@ try {
     if ($script:EnableRtk) { $script:InstallSteps["RTK configuration"] = "Not attempted" }
 
     Write-Host "`nInstallation plan:"
-    Write-Host "  Install or update Free Claude Code."
+    Write-Host "  Install or update Opus 5.5."
     Write-Host "  Verify or install: $($selectedAgents -join ', ')."
     if ($VoiceLocal) { Write-Host "  Include local voice support." }
     if ($TorchBackend) { Write-Host "  PyTorch backend: $TorchBackend" }
@@ -1887,7 +1887,7 @@ try {
 
     Ensure-SelectedCodingAgents
 
-    Start-InstallStep "FCC package" "Installing or updating Free Claude Code"
+    Start-InstallStep "FCC package" "Installing or updating Opus 5.5"
     Install-FreeClaudeCode
 
     Configure-AndConfirmFreeClaudeCode

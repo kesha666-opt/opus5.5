@@ -1,4 +1,4 @@
-"""Lightweight entry points for installed Free Claude Code commands."""
+"""Lightweight entry points for installed Opus 5.5 commands."""
 
 import sys
 from collections.abc import Sequence

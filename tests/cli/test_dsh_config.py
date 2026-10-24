@@ -68,7 +68,7 @@ def test_dsh_config_pins_responses_models_retries_and_private_state(
     llm = _row_by_id(launch, "llm-pi-ai")
     provider = llm["config"]["providers"]["free-claude-code"]
     assert provider == {
-        "displayName": "Free Claude Code",
+        "displayName": "Opus 5.5",
         "apiKeyEnv": "FCC_DSH_API_KEY",
         "api": "openai-responses",
         "baseURL": "http://127.0.0.1:9191/v1",

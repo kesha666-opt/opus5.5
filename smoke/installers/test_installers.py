@@ -835,7 +835,7 @@ def test_install_sh_fresh_install_is_verified(posix_harness: PosixHarness) -> No
     result = posix_harness.run()
 
     assert result.returncode == 0, result.stderr
-    assert "Free Claude Code is installed and verified." in result.stdout
+    assert "Opus 5.5 is installed and verified." in result.stdout
     calls = posix_harness.calls()
     assert calls.index("claude-install") < calls.index("claude:--version")
     assert calls.index("codex-install:1") < calls.index("codex:--version")
@@ -919,7 +919,7 @@ def test_install_sh_stops_when_selected_hermes_install_fails(
     )
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     _assert_uv_ready_without_fcc_install(posix_harness.calls())
 
 
@@ -981,7 +981,7 @@ def test_install_sh_stops_when_grok_install_fails(
     )
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     _assert_uv_ready_without_fcc_install(posix_harness.calls())
 
 
@@ -996,7 +996,7 @@ def test_install_sh_stops_when_muse_install_fails(
     )
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     _assert_uv_ready_without_fcc_install(posix_harness.calls())
 
 
@@ -1009,7 +1009,7 @@ def test_install_sh_stops_when_aider_install_fails(
     )
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     calls = posix_harness.calls()
     aider_install = (
         "uv:tool install --force --python python3.12 --with pip aider-chat@latest"
@@ -1164,7 +1164,7 @@ def test_install_sh_rejects_incompatible_node_for_selected_dsh(
     result = posix_harness.run_interactive("n\nn\nn\nn\nn\nn\ny\nn\nn\nn\nn\n")
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     assert not any(
         call.startswith(("uv:", "download:", "npm:install"))
         for call in posix_harness.calls()
@@ -1194,7 +1194,7 @@ def test_install_sh_stops_when_selected_dsh_install_fails(
     )
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     _assert_uv_ready_without_fcc_install(posix_harness.calls())
 
 
@@ -1326,7 +1326,7 @@ def test_install_sh_stops_when_rtk_setup_fails(
     result = posix_harness.run("--rtk", fail_step=failure)
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." in result.stdout
+    assert "Opus 5.5 is installed and verified." in result.stdout
     assert "fcc-server:--version" in posix_harness.calls()
     assert re.search(r"failed.*RTK configuration", result.stdout, re.IGNORECASE)
 
@@ -1421,9 +1421,9 @@ def test_install_sh_stops_if_macos_icon_export_fails(
 
     assert result.returncode != 0
     assert "Command failed with exit code 37" in result.stderr
-    assert "Free Claude Code is installed and verified." in result.stdout
+    assert "Opus 5.5 is installed and verified." in result.stdout
     assert "Start the proxy with: fcc-server" in result.stdout
-    assert "Open Free Claude Code from Applications" not in result.stdout
+    assert "Open Opus 5.5 from Applications" not in result.stdout
     assert not (
         posix_harness.root / "home" / "Desktop" / "Free Claude Code.app"
     ).exists()
@@ -1442,7 +1442,7 @@ def test_install_sh_rejects_unowned_macos_app_bundle(
     result = posix_harness.run()
 
     assert result.returncode != 0
-    assert "not managed by Free Claude Code" in result.stderr
+    assert "not managed by Opus 5.5" in result.stderr
     assert plist.read_text(encoding="utf-8") == "foreign app"
     assert not (contents / ".free-claude-code-owner").exists()
 
@@ -1734,7 +1734,7 @@ def test_install_sh_stops_without_success_on_each_failure(
     result = posix_harness.run(fail_step=failure)
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     calls = posix_harness.calls()
     if failure == "path-update":
         failure_index = calls.index("uv:tool update-shell")
@@ -1779,7 +1779,7 @@ def test_install_sh_dry_run_never_executes_commands(
     assert result.returncode == 0, result.stderr
     assert posix_harness.calls() == []
     assert "Dry run complete. No changes were made." in result.stdout
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
 
 
 def test_install_sh_rejects_broken_existing_client_without_replacing_it(
@@ -3164,7 +3164,7 @@ def test_install_ps1_fresh_install_is_verified(
     result = powershell_harness.run()
 
     assert result.returncode == 0, result.stderr
-    assert "Free Claude Code is installed and verified." in result.stdout
+    assert "Opus 5.5 is installed and verified." in result.stdout
     calls = powershell_harness.calls()
     assert calls.index("claude-install") < calls.index("claude:--version")
     assert calls.index("codex-install:1") < calls.index("codex:--version")
@@ -3721,9 +3721,9 @@ def test_install_ps1_stops_if_windows_icon_export_fails(
 
     assert result.returncode != 0
     assert "Command failed with exit code 56" in result.stderr
-    assert "Free Claude Code is installed and verified." in result.stdout
+    assert "Opus 5.5 is installed and verified." in result.stdout
     assert "start the proxy with: fcc-server" in result.stdout
-    assert "Open the Free Claude Code desktop shortcut" not in result.stdout
+    assert "Open the Opus 5.5 desktop shortcut" not in result.stdout
     home = Path(powershell_harness.env["USERPROFILE"])
     assert not (home / "Desktop" / "Free Claude Code.lnk").exists()
 
@@ -3749,9 +3749,9 @@ def test_install_ps1_preserves_unowned_desktop_shortcut(
     )
 
     assert result.returncode == 0, result.stderr
-    assert "not managed by Free Claude Code" in result.stdout
+    assert "not managed by Opus 5.5" in result.stdout
     assert desktop_shortcut.read_bytes() == original_shortcut
-    assert "Open the Free Claude Code desktop shortcut" not in result.stdout
+    assert "Open the Opus 5.5 desktop shortcut" not in result.stdout
     assert "start the proxy with: fcc-server" in result.stdout
 
 
@@ -4049,7 +4049,7 @@ def test_install_ps1_stops_without_success_on_each_failure(
         assert "Installer scenario completed." not in result.stdout
 
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
     calls = powershell_harness.calls()
     if failure == "path-update":
         failure_index = calls.index("uv:tool update-shell")
@@ -4088,7 +4088,7 @@ def test_install_ps1_dry_run_never_executes_commands(
     assert result.returncode == 0, result.stderr
     assert powershell_harness.calls() == []
     assert "Dry run complete. No changes were made." in result.stdout
-    assert "Free Claude Code is installed and verified." not in result.stdout
+    assert "Opus 5.5 is installed and verified." not in result.stdout
 
 
 def test_install_ps1_rejects_broken_existing_client_without_replacing_it(
@@ -5129,7 +5129,7 @@ def _assert_installer_recovers_after_verification_failure(
     assert failed.returncode != 0
     assert not any(call.startswith("rtk:init") for call in harness.calls())
     assert not (home / "Desktop" / "Free Claude Code.lnk").exists()
-    assert "Free Claude Code is installed and verified." not in failed.stdout
+    assert "Opus 5.5 is installed and verified." not in failed.stdout
     assert re.search(r"completed.*FCC package", failed.stdout, re.IGNORECASE)
     assert re.search(r"failed.*FCC verification", failed.stdout, re.IGNORECASE)
     assert re.search(r"not attempted.*RTK", failed.stdout, re.IGNORECASE)
@@ -5147,7 +5147,7 @@ def _assert_installer_recovers_after_verification_failure(
     recovered = harness.run(*options)
 
     assert recovered.returncode == 0, recovered.stderr
-    assert "Free Claude Code is installed and verified." in recovered.stdout
+    assert "Opus 5.5 is installed and verified." in recovered.stdout
     retry_calls = harness.calls()[calls_before_retry:]
     assert "claude-install" not in retry_calls
     assert "codex-install:1" not in retry_calls
@@ -5481,7 +5481,7 @@ def _assert_installer_keeps_launch_instructions_after_rtk_failure(
     harness.add_rtk()
     result = harness.run("-Rtk" if windows else "--rtk", fail_step="rtk-init-claude")
     assert result.returncode != 0
-    assert "Free Claude Code is installed and verified." in result.stdout
+    assert "Opus 5.5 is installed and verified." in result.stdout
     assert "Run Claude Code with: fcc-claude" in result.stdout
     assert "Failed: RTK configuration" in result.stdout
     assert "Retry:" in result.stdout

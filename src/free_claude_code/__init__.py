@@ -1,1 +1,1 @@
-"""Free Claude Code package."""
+"""Opus 5.5 package."""

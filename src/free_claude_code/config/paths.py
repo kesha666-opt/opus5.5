@@ -1,4 +1,4 @@
-"""Shared filesystem paths for Free Claude Code configuration."""
+"""Shared filesystem paths for Opus 5.5 configuration."""
 
 from pathlib import Path
 

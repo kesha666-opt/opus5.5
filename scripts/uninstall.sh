@@ -15,7 +15,7 @@ show_usage() {
     cat <<'USAGE'
 Usage: uninstall.sh [options]
 
-Removes the Free Claude Code uv tool and deletes ~/.fcc/ after removal is verified.
+Removes the Opus 5.5 uv tool and deletes ~/.fcc/ after removal is verified.
 Does not remove uv, Claude Code, Codex, Pi, OpenCode, Cline, Hermes Agent, DeepSeek Harness, Grok Build, Muse Code, Aider, the uv-managed Python runtime, or shared PATH entries.
 
 Options:
@@ -133,7 +133,7 @@ assert_no_fcc_processes_running() {
     done
 
     if [ -n "$running" ]; then
-        fail "Free Claude Code is still running (${running# }). Stop those processes, then rerun uninstall."
+        fail "Opus 5.5 is still running (${running# }). Stop those processes, then rerun uninstall."
     fi
 }
 
@@ -146,7 +146,7 @@ initialize_uv_context() {
     fi
 
     if ! command -v uv >/dev/null 2>&1; then
-        fail "uv is required to remove the Free Claude Code tool. Install uv, then rerun this uninstaller; ~/.fcc was not deleted."
+        fail "uv is required to remove the Opus 5.5 tool. Install uv, then rerun this uninstaller; ~/.fcc was not deleted."
     fi
 
     print_command uv tool dir --bin
@@ -175,7 +175,7 @@ uninstall_free_claude_code() {
     fi
 
     if is_missing_uv_tool_error "$output"; then
-        printf 'Free Claude Code uv tool is already absent; verifying its entry points.\n'
+        printf 'Opus 5.5 uv tool is already absent; verifying its entry points.\n'
         return 0
     fi
     if [ -n "$output" ]; then
@@ -186,7 +186,7 @@ uninstall_free_claude_code() {
 
 verify_fcc_commands_removed() {
     if [ "$dry_run" -eq 1 ]; then
-        printf '+ verify all Free Claude Code entry points are absent from the uv tool bin directory\n'
+        printf '+ verify all Opus 5.5 entry points are absent from the uv tool bin directory\n'
         return 0
     fi
 
@@ -198,7 +198,7 @@ verify_fcc_commands_removed() {
         fi
     done
     if [ -n "$remaining" ]; then
-        fail "Free Claude Code entry points remain after uv uninstall:${remaining}; ~/.fcc was not deleted."
+        fail "Opus 5.5 entry points remain after uv uninstall:${remaining}; ~/.fcc was not deleted."
     fi
 }
 
@@ -219,10 +219,10 @@ remove_macos_desktop_app() {
 
     if ! macos_app_is_fcc_owned "$app_dir"; then
         if [ -e "$app_dir" ] || [ -L "$app_dir" ]; then
-            printf 'An app not managed by Free Claude Code exists at %s; leaving it unchanged.\n' "$app_dir"
+            printf 'An app not managed by Opus 5.5 exists at %s; leaving it unchanged.\n' "$app_dir"
         fi
         if [ -e "$desktop_link" ] || [ -L "$desktop_link" ]; then
-            printf 'The Free Claude Code desktop item cannot be verified; leaving it unchanged.\n'
+            printf 'The Opus 5.5 desktop item cannot be verified; leaving it unchanged.\n'
         fi
         return 0
     fi
@@ -274,21 +274,21 @@ parse_args() {
 }
 
 parse_args "$@"
-[ -n "${HOME:-}" ] || fail "HOME is not set; cannot locate Free Claude Code data."
+[ -n "${HOME:-}" ] || fail "HOME is not set; cannot locate Opus 5.5 data."
 
-step "Checking for running Free Claude Code processes"
+step "Checking for running Opus 5.5 processes"
 assert_no_fcc_processes_running
 
-step "Locating the uv-managed Free Claude Code installation"
+step "Locating the uv-managed Opus 5.5 installation"
 initialize_uv_context
 
-step "Removing the Free Claude Code uv tool"
+step "Removing the Opus 5.5 uv tool"
 uninstall_free_claude_code
 
-step "Verifying Free Claude Code entry points were removed"
+step "Verifying Opus 5.5 entry points were removed"
 verify_fcc_commands_removed
 
-step "Removing the Free Claude Code desktop launcher"
+step "Removing the Opus 5.5 desktop launcher"
 remove_macos_desktop_app
 
 step "Purging FCC config and data from ~/.fcc"
@@ -297,6 +297,6 @@ purge_fcc_home
 if [ "$dry_run" -eq 1 ]; then
     printf '\nDry run complete. No changes were made.\n'
 else
-    printf '\nFree Claude Code has been removed and verified.\n'
+    printf '\nOpus 5.5 has been removed and verified.\n'
     printf 'uv, Claude Code, Codex, Pi, OpenCode, Cline, Hermes Agent, DeepSeek Harness, Grok Build, Muse Code, Aider, the uv-managed Python runtime, and shared PATH entries were left installed.\n'
 fi

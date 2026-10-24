@@ -63,7 +63,7 @@ def codex_model_entry(model: CodexModel) -> JsonObject:
     entry: JsonObject = {
         "slug": candidate.wire_slug,
         "display_name": candidate.display_name,
-        "description": "Free Claude Code provider model",
+        "description": "Opus 5.5 provider model",
         "supported_reasoning_levels": [
             {"effort": effort, "description": SUPPORTED_REASONING_LEVELS[effort]}
             for effort in model.reasoning_levels

@@ -1,1 +1,1 @@
-"""HTTP API adapter for Free Claude Code."""
+"""HTTP API adapter for Opus 5.5."""

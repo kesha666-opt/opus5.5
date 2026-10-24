@@ -253,7 +253,7 @@ def test_uninstall_sh_removes_and_verifies_only_fcc(
     result = posix_uninstall_harness.run()
 
     assert result.returncode == 0, result.stderr
-    assert "Free Claude Code has been removed and verified." in result.stdout
+    assert "Opus 5.5 has been removed and verified." in result.stdout
     assert not posix_uninstall_harness.fcc_home.exists()
     assert all(
         not (posix_uninstall_harness.tool_bin / name).exists() for name in FCC_COMMANDS
@@ -339,7 +339,7 @@ def test_uninstall_sh_preserves_unowned_macos_app_bundle(
     result = posix_uninstall_harness.run()
 
     assert result.returncode == 0, result.stderr
-    assert "not managed by Free Claude Code" in result.stdout
+    assert "not managed by Opus 5.5" in result.stdout
     assert sentinel.read_text(encoding="utf-8") == "keep"
     assert desktop_link.is_symlink()
 
@@ -367,7 +367,7 @@ def test_uninstall_sh_preserves_config_when_tool_removal_is_unconfirmed(
 
     assert result.returncode != 0
     assert posix_uninstall_harness.fcc_home.exists()
-    assert "Free Claude Code has been removed and verified." not in result.stdout
+    assert "Opus 5.5 has been removed and verified." not in result.stdout
     assert not any(call.startswith("rm:") for call in posix_uninstall_harness.calls())
 
 
@@ -392,7 +392,7 @@ def test_uninstall_sh_reports_purge_failure_after_verified_tool_removal(
     assert all(
         not (posix_uninstall_harness.tool_bin / name).exists() for name in FCC_COMMANDS
     )
-    assert "Free Claude Code has been removed and verified." not in result.stdout
+    assert "Opus 5.5 has been removed and verified." not in result.stdout
 
 
 def test_uninstall_sh_dry_run_is_non_mutating(
@@ -678,7 +678,7 @@ def test_uninstall_ps1_removes_and_verifies_only_fcc(
     result = powershell_uninstall_harness.run()
 
     assert result.returncode == 0, result.stderr
-    assert "Free Claude Code has been removed and verified." in result.stdout
+    assert "Opus 5.5 has been removed and verified." in result.stdout
     assert not powershell_uninstall_harness.fcc_home.exists()
     assert all(
         not (powershell_uninstall_harness.tool_bin / f"{name}.cmd").exists()
@@ -742,7 +742,7 @@ def test_uninstall_ps1_preserves_unowned_desktop_shortcut(
     result = powershell_uninstall_harness.run()
 
     assert result.returncode == 0, result.stderr
-    assert "not managed by Free Claude Code" in result.stdout
+    assert "not managed by Opus 5.5" in result.stdout
     assert desktop_shortcut.read_bytes() == original_shortcut
 
 
@@ -767,7 +767,7 @@ def test_uninstall_ps1_preserves_config_when_tool_removal_is_unconfirmed(
 
     assert result.returncode != 0
     assert powershell_uninstall_harness.fcc_home.exists()
-    assert "Free Claude Code has been removed and verified." not in result.stdout
+    assert "Opus 5.5 has been removed and verified." not in result.stdout
     assert not any(
         call.startswith("remove:") for call in powershell_uninstall_harness.calls()
     )
@@ -795,7 +795,7 @@ def test_uninstall_ps1_reports_purge_failure_after_verified_tool_removal(
         not (powershell_uninstall_harness.tool_bin / f"{name}.cmd").exists()
         for name in FCC_COMMANDS
     )
-    assert "Free Claude Code has been removed and verified." not in result.stdout
+    assert "Opus 5.5 has been removed and verified." not in result.stdout
 
 
 def test_uninstall_ps1_dry_run_is_non_mutating(

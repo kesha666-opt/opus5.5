@@ -1,4 +1,4 @@
-"""Implementations for installed Free Claude Code commands."""
+"""Implementations for installed Opus 5.5 commands."""
 
 import errno
 import json

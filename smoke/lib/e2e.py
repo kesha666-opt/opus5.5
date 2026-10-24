@@ -753,7 +753,7 @@ def default_cli_events(session_id: str) -> list[dict[str, Any]]:
                     {
                         "type": "tool_result",
                         "tool_use_id": "toolu_fake",
-                        "content": "Free Claude Code",
+                        "content": "Opus 5.5",
                     },
                     {"type": "text", "text": "Fake platform answer."},
                 ]

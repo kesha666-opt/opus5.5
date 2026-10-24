@@ -1,5 +1,5 @@
 name: Problem after installation
-description: Report a problem using Free Claude Code after installing it.
+description: Report a problem using Opus 5.5 after installing it.
 labels:
   - bug
 body:

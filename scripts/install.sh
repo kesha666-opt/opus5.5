@@ -61,7 +61,7 @@ show_usage() {
     cat <<'USAGE'
 Usage: install.sh [options]
 
-Installs or updates Free Claude Code and Claude Code.
+Installs or updates Opus 5.5 and Claude Code.
 
 Options:
   --voice-local            Install local Whisper voice transcription support.
@@ -95,7 +95,7 @@ initialize_install_log() {
     log_timestamp=$(date '+%Y%m%d-%H%M%S' 2>/dev/null) || log_timestamp=unknown
     install_log="${HOME:-}/.fcc/logs/install-$log_timestamp-$$.log"
     if [ -n "${HOME:-}" ] && (umask 077; mkdir -p "$HOME/.fcc/logs" && set -C && : >"$install_log") 2>/dev/null; then
-        write_install_log "Starting Free Claude Code installer"
+        write_install_log "Starting Opus 5.5 installer"
     else
         install_log=""
         install_log_warning=1
@@ -450,7 +450,7 @@ assert_no_fcc_processes_running() {
     done
 
     if [ -n "$running" ]; then
-        fail "Free Claude Code is still running ($running). Stop those processes, then rerun the installer."
+        fail "Opus 5.5 is still running ($running). Stop those processes, then rerun the installer."
     fi
 }
 
@@ -1437,7 +1437,7 @@ configure_and_verify_free_claude_code() {
     start_install_step "FCC verification"
 
     for command_name in fcc-desktop fcc-server fcc-claude fcc-codex fcc-pi fcc-opencode fcc-cline fcc-hermes fcc-dsh fcc-grok fcc-muse fcc-aider fcc-doctor fcc-update; do
-        [ -x "$tool_bin/$command_name" ] || fail "Free Claude Code installation did not create $tool_bin/$command_name."
+        [ -x "$tool_bin/$command_name" ] || fail "Opus 5.5 installation did not create $tool_bin/$command_name."
     done
 
     run "$tool_bin/fcc-server" --version
@@ -1473,7 +1473,7 @@ install_macos_desktop_app() {
 
     if [ -e "$app_dir" ] || [ -L "$app_dir" ]; then
         macos_app_is_fcc_owned "$app_dir" ||
-            fail "An app not managed by Free Claude Code already exists at $app_dir. Move it, then rerun the installer."
+            fail "An app not managed by Opus 5.5 already exists at $app_dir. Move it, then rerun the installer."
     fi
 
     if [ "$dry_run" -eq 1 ]; then
@@ -1486,7 +1486,7 @@ install_macos_desktop_app() {
 
     mkdir -p "$executable_dir" "$resources_dir" "$desktop_dir"
     run "$tool_bin/fcc-desktop" --export-icon "$icon_path"
-    [ -f "$icon_path" ] || fail "Free Claude Code did not export its macOS app icon to $icon_path."
+    [ -f "$icon_path" ] || fail "Opus 5.5 did not export its macOS app icon to $icon_path."
     printf '%s\n' "$FCC_MACOS_BUNDLE_ID" > "$owner_file"
     cat > "$contents_dir/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1494,7 +1494,7 @@ install_macos_desktop_app() {
 <plist version="1.0">
 <dict>
     <key>CFBundleDisplayName</key>
-    <string>Free Claude Code</string>
+    <string>Opus 5.5</string>
     <key>CFBundleExecutable</key>
     <string>fcc-desktop</string>
     <key>CFBundleIdentifier</key>
@@ -1502,7 +1502,7 @@ install_macos_desktop_app() {
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleName</key>
-    <string>Free Claude Code</string>
+    <string>Opus 5.5</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSMultipleInstancesProhibited</key>
@@ -1535,10 +1535,10 @@ PLIST
 
 show_installer_next_steps() {
     if [ "$desktop_ready" -eq 1 ]; then
-        printf '\nFree Claude Code is installed and verified. Open Free Claude Code from Applications or the desktop to run it in the background.\n'
+        printf '\nOpus 5.5 is installed and verified. Open Opus 5.5 from Applications or the desktop to run it in the background.\n'
         printf 'For terminal use, start the proxy with: fcc-server\n'
     else
-        printf '\nFree Claude Code is installed and verified. Start the proxy with: fcc-server\n'
+        printf '\nOpus 5.5 is installed and verified. Start the proxy with: fcc-server\n'
     fi
     if [ "$install_claude" -eq 1 ]; then
         printf 'Run Claude Code with: fcc-claude\n'
@@ -1583,7 +1583,7 @@ add_known_bin_directories
 if ! command -v hermes >/dev/null 2>&1 && ! hermes_platform_is_supported; then
     install_hermes=0
 fi
-step "Checking for running Free Claude Code processes"
+step "Checking for running Opus 5.5 processes"
 assert_no_fcc_processes_running
 
 if installer_is_interactive; then
@@ -1603,7 +1603,7 @@ pending_steps=$(
     [ "$install_muse" -eq 0 ] || printf 'Muse\n'
     [ "$install_aider" -eq 0 ] || printf 'Aider\n'
 )
-printf '\nInstallation plan:\n  Install or update Free Claude Code.\n  Verify or install: '
+printf '\nInstallation plan:\n  Install or update Opus 5.5.\n  Verify or install: '
 printf '%s\n' "$pending_steps" | while IFS= read -r agent; do
     printf '%s%s' "${separator:-}" "$agent"
     separator=', '
@@ -1653,13 +1653,13 @@ ensure_uv
 
 ensure_selected_coding_agents
 
-start_install_step "FCC package" "Installing or updating Free Claude Code"
+start_install_step "FCC package" "Installing or updating Opus 5.5"
 install_free_claude_code
 
 configure_and_verify_free_claude_code
 
 if [ "$(uname -s)" = "Darwin" ]; then
-    start_install_step "Desktop integration" "Installing the Free Claude Code desktop launcher"
+    start_install_step "Desktop integration" "Installing the Opus 5.5 desktop launcher"
     install_macos_desktop_app
     desktop_ready=1
 fi

@@ -26,7 +26,7 @@ from free_claude_code.harnesses.model_policy import (
     reasoning_levels,
 )
 
-_NAME = "Free Claude Code"
+_NAME = "Opus 5.5"
 _MARKER = "fccIntegration"
 
 

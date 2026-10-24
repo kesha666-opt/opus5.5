@@ -1228,7 +1228,7 @@ def test_claude_cli_web_search_e2e(smoke_config: SmokeConfig, tmp_path: Path) ->
                         "role": "user",
                         "content": (
                             "You must use the available web search tool to find the "
-                            "Free Claude Code GitHub repository."
+                            "Opus 5.5 GitHub repository."
                         ),
                     }
                 ],
@@ -1248,7 +1248,7 @@ def test_claude_cli_web_search_e2e(smoke_config: SmokeConfig, tmp_path: Path) ->
             cwd=tmp_path,
             bare=False,
             prompt=(
-                "Use WebSearch exactly once to find the Free Claude Code GitHub "
+                "Use WebSearch exactly once to find the Opus 5.5 GitHub "
                 "repository. Then reply with FCC_SMOKE_WEB_SEARCH and one source URL."
             ),
             tools="WebSearch",
